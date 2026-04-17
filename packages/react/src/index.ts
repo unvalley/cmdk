@@ -1,5 +1,6 @@
 export { Command, type CommandProps } from './command'
 export { useCommandSlice, useCommandStore } from './context'
+export { CommandDialog, type CommandDialogProps } from './dialog'
 export { CommandEmpty, type CommandEmptyProps } from './empty'
 export { CommandGroup, type CommandGroupProps } from './group'
 export { CommandInput, type CommandInputProps } from './input'
