@@ -1,4 +1,4 @@
-import { type HTMLAttributes, type ReactNode, forwardRef, useEffect, useId, useRef } from 'react'
+import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useId, useRef } from 'react'
 import { useCommandSlice, useCommandStore } from './context'
 
 export interface ItemProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
@@ -61,7 +61,8 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(function Item(
   }
 
   return (
-    // biome-ignore lint/a11y/useFocusableInteractive: cmdk items are keyboard-navigated via input, not directly focusable
+    // biome-ignore lint/a11y/useKeyWithClickEvents: items are navigated via arrow keys on the root, not individually focused
+    // biome-ignore lint/a11y/useFocusableInteractive: items are navigated via the input, not directly focused
     <div
       ref={ref}
       cmdk-item=""

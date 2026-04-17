@@ -1,8 +1,8 @@
 import {
   type ChangeEvent,
   type CompositionEvent,
-  type InputHTMLAttributes,
   forwardRef,
+  type InputHTMLAttributes,
   useRef,
 } from 'react'
 import { useCommandSlice, useCommandStore } from './context'

@@ -5,10 +5,6 @@ import { Command } from '../src/command'
 import { Item } from '../src/item'
 import { List } from '../src/list'
 
-function selected(): string | null {
-  return document.querySelector('[data-selected="true"]')?.textContent ?? null
-}
-
 describe('async items (regressions)', () => {
   it('async items render correctly when added after mount (#280)', async () => {
     function Demo() {

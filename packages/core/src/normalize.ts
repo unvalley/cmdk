@@ -1,4 +1,4 @@
-const SPACE_LIKE = /[\s\-]/g
+const SPACE_LIKE = /[\s-]/g
 
 /**
  * Lowercase, strip Unicode diacritics, collapse space-like chars to a single space.

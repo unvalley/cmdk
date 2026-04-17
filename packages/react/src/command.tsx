@@ -62,7 +62,13 @@ export function Command({ label, className, children, ...options }: CommandProps
 
   return (
     <CommandContext.Provider value={store}>
-      <div cmdk-root="" aria-label={label} className={className} onKeyDown={handleKeyDown}>
+      <div
+        cmdk-root=""
+        role="application"
+        aria-label={label}
+        className={className}
+        onKeyDown={handleKeyDown}
+      >
         {children}
       </div>
     </CommandContext.Provider>

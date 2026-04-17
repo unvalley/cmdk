@@ -1,4 +1,4 @@
-import { type HTMLAttributes, forwardRef } from 'react'
+import { forwardRef, type HTMLAttributes } from 'react'
 import { useCommandSlice } from './context'
 
 export interface SeparatorProps extends HTMLAttributes<HTMLDivElement> {

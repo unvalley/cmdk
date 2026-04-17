@@ -1,6 +1,6 @@
-export { createCommand } from './store'
-export { commandScore } from './score'
 export { normalize } from './normalize'
+export { commandScore } from './score'
+export { createCommand } from './store'
 export type {
   CommandOptions,
   CommandState,

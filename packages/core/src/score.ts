@@ -9,9 +9,9 @@ const PENALTY_SKIPPED = 0.999
 const PENALTY_CASE_MISMATCH = 0.9999
 const PENALTY_NOT_COMPLETE = 0.99
 
-const IS_GAP_REGEXP = /[\\\/_+.#"@\[\(\{&]/
-const COUNT_GAPS_REGEXP = /[\\\/_+.#"@\[\(\{&]/g
-const IS_SPACE_REGEXP = /[\s\-]/
+const IS_GAP_REGEXP = /[\\/_+.#"@[({&]/
+const COUNT_GAPS_REGEXP = /[\\/_+.#"@[({&]/g
+const IS_SPACE_REGEXP = /[\s-]/
 
 function commandScoreInner(
   string: string,
@@ -60,7 +60,7 @@ function commandScoreInner(
         }
       } else if (IS_SPACE_REGEXP.test(string.charAt(index - 1))) {
         score *= SCORE_SPACE_WORD_JUMP
-        spaceBreaks = string.slice(stringIndex, index - 1).match(/[\s\-]/g)
+        spaceBreaks = string.slice(stringIndex, index - 1).match(/[\s-]/g)
         if (spaceBreaks && stringIndex > 0) {
           score *= PENALTY_SKIPPED ** spaceBreaks.length
         }

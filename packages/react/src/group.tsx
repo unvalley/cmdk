@@ -1,4 +1,4 @@
-import { type HTMLAttributes, type ReactNode, forwardRef, useEffect, useId } from 'react'
+import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useId } from 'react'
 import { useCommandSlice, useCommandStore } from './context'
 
 export interface GroupProps extends HTMLAttributes<HTMLDivElement> {

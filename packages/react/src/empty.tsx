@@ -1,4 +1,4 @@
-import { type HTMLAttributes, type ReactNode, forwardRef } from 'react'
+import { forwardRef, type HTMLAttributes, type ReactNode } from 'react'
 import { useCommandSlice } from './context'
 
 export interface EmptyProps extends HTMLAttributes<HTMLDivElement> {

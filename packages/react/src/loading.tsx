@@ -1,4 +1,4 @@
-import { type HTMLAttributes, type ReactNode, forwardRef } from 'react'
+import { forwardRef, type HTMLAttributes, type ReactNode } from 'react'
 
 export interface LoadingProps extends HTMLAttributes<HTMLDivElement> {
   /** 0..1 progress; surfaced as aria-valuenow when set. */
@@ -11,7 +11,6 @@ export const Loading = forwardRef<HTMLDivElement, LoadingProps>(function Loading
   ref,
 ) {
   return (
-    // biome-ignore lint/a11y/useFocusableInteractive: progressbar is a visual indicator, not interactive
     <div
       ref={ref}
       cmdk-loading=""
