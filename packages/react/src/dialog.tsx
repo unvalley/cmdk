@@ -1,4 +1,11 @@
-import { type MouseEvent, type ReactNode, type Ref, useEffect, useRef } from 'react'
+import {
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+  type Ref,
+  useEffect,
+  useRef,
+} from 'react'
 import { Command, type CommandProps } from './command'
 
 export type CommandDialogProps = CommandProps & {
@@ -59,9 +66,26 @@ export const CommandDialog = ({
     if (e.target === e.currentTarget) onOpenChange(false)
   }
 
+  // Native <dialog> should close on ESC via the `cancel` event, but some
+  // browsers (notably Safari) let the inner <input> swallow the ESC keydown
+  // before the dialog can react. Intercept it explicitly.
+  const handleKeyDown = (e: KeyboardEvent<HTMLDialogElement>) => {
+    if (e.key !== 'Escape') return
+    // Allow consumers to pre-empt (and respect IME composition).
+    if (e.defaultPrevented || e.nativeEvent.isComposing) return
+    e.preventDefault()
+    onOpenChange(false)
+  }
+
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click close is a pointer-only affordance; ESC handles keyboard dismiss
-    <dialog ref={dialogRef} cmdk-dialog="" className={dialogClassName} onClick={handleClick}>
+    <dialog
+      ref={dialogRef}
+      cmdk-dialog=""
+      className={dialogClassName}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+    >
       <Command {...commandProps}>{children}</Command>
     </dialog>
   )

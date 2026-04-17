@@ -65,6 +65,30 @@ describe('<CommandDialog>', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
+  it('closes when Escape is pressed from the input (Safari-safe path)', () => {
+    const onOpenChange = vi.fn()
+    render(
+      <CommandDialog open={true} onOpenChange={onOpenChange} label="menu">
+        <CommandInput placeholder="Search" />
+      </CommandDialog>,
+    )
+    const input = screen.getByPlaceholderText('Search')
+    fireEvent.keyDown(input, { key: 'Escape' })
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it('does not close on Escape during IME composition', () => {
+    const onOpenChange = vi.fn()
+    render(
+      <CommandDialog open={true} onOpenChange={onOpenChange} label="menu">
+        <CommandInput placeholder="Search" />
+      </CommandDialog>,
+    )
+    const input = screen.getByPlaceholderText('Search')
+    fireEvent.keyDown(input, { key: 'Escape', isComposing: true })
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
   it('contains the Command with the cmdk-root attribute', () => {
     render(
       <CommandDialog open={true} onOpenChange={() => {}} label="menu">
