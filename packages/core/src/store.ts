@@ -202,8 +202,10 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     setValue(filteredOrder[prevIdx]!)
   }
 
-  function setComposing(_: boolean): void {
-    throw new Error('not implemented')
+  function setComposing(next: boolean): void {
+    if (next === isComposing) return
+    isComposing = next
+    notify()
   }
   function triggerSelect(event?: Event): void {
     if (value === '') return
