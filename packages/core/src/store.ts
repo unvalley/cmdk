@@ -21,6 +21,7 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
   const groups = new Map<string, GroupData>()
   let search = options.search ?? ''
   let value = options.value ?? ''
+  let hasBeenSelected = value !== ''  // true if controlled with non-empty initial
   let isComposing = false
   let filteredOrder: string[] = []
   let visibleSet: Set<string> = new Set()
@@ -64,10 +65,10 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
       if (item.groupId) visibleGroups.add(item.groupId)
     }
 
-    // Auto-correct selection if current value is no longer visible.
-    // Skip during initialization (before items are registered) to respect options.value.
-    // Skip when value is '' (intentional "no selection" state).
-    if (initialized && value !== '' && !visibleSet.has(value)) {
+    // Auto-correct selection if the previously-selected value is no longer visible.
+    // Skip during initial recompute (respect options.value).
+    // Skip if user has never made a selection (initial mount has no highlight).
+    if (initialized && hasBeenSelected && !visibleSet.has(value)) {
       const next = filteredOrder[0] ?? ''
       if (next !== value) {
         value = next
@@ -160,6 +161,7 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
 
   function setValue(next: string): void {
     if (next === value) return
+    if (next !== '') hasBeenSelected = true
     value = next
     options.onValueChange?.(value)
     notify()
