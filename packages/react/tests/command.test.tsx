@@ -1,6 +1,8 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 import { Command } from '../src/command'
+import { Input } from '../src/input'
 
 describe('<Command>', () => {
   it('renders children', () => {
@@ -22,5 +24,35 @@ describe('<Command>', () => {
     expect(container.querySelector('[cmdk-root]')?.getAttribute('aria-label')).toBe(
       'My Menu',
     )
+  })
+})
+
+describe('<Command.Input>', () => {
+  it('forwards typing to store search', async () => {
+    const onSearchChange = vi.fn()
+    render(
+      <Command onSearchChange={onSearchChange}>
+        <Input placeholder="Search" />
+      </Command>,
+    )
+    const input = screen.getByPlaceholderText('Search')
+    await userEvent.type(input, 'app')
+    expect(onSearchChange).toHaveBeenLastCalledWith('app')
+  })
+
+  it('does not fire onSearchChange while IME composing (#363)', () => {
+    const onSearchChange = vi.fn()
+    render(
+      <Command onSearchChange={onSearchChange}>
+        <Input placeholder="Search" />
+      </Command>,
+    )
+    const input = screen.getByPlaceholderText('Search') as HTMLInputElement
+    fireEvent.compositionStart(input)
+    fireEvent.change(input, { target: { value: 'こ' } })
+    expect(onSearchChange).not.toHaveBeenCalled()
+    fireEvent.change(input, { target: { value: 'こんにちは' } })
+    fireEvent.compositionEnd(input)
+    expect(onSearchChange).toHaveBeenCalledWith('こんにちは')
   })
 })
