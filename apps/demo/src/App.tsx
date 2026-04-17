@@ -36,7 +36,8 @@ const ACCOUNT: readonly Action[] = [
 ]
 
 export const App = () => {
-  const [open, setOpen] = useState(false)
+  // Open on initial mount so visitors immediately see the command palette.
+  const [open, setOpen] = useState(true)
   const [log, setLog] = useState<string[]>([])
 
   useEffect(() => {
