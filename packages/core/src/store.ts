@@ -136,8 +136,12 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
   }
 
   // Stub mutations — implemented in later tasks
-  function setSearch(_: string): void {
-    throw new Error('not implemented')
+  function setSearch(next: string): void {
+    if (next === search) return
+    search = next
+    recompute()
+    options.onSearchChange?.(search)
+    notify()
   }
   function setValue(_: string): void {
     throw new Error('not implemented')
