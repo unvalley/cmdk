@@ -13,6 +13,11 @@ const IS_GAP_REGEXP = /[\\/_+.#"@[({&]/
 const COUNT_GAPS_REGEXP = /[\\/_+.#"@[({&]/g
 const IS_SPACE_REGEXP = /[\s-]/
 
+export type PreparedCommandScoreHaystack = {
+  haystack: string
+  normalizedHaystack: string
+}
+
 const commandScoreInner = (
   string: string,
   abbreviation: string,
@@ -121,14 +126,35 @@ export const commandScore = (
   abbreviation: string,
   aliases: readonly string[],
 ): number => {
-  const haystack = aliases && aliases.length > 0 ? `${string} ${aliases.join(' ')}` : string
-  return commandScoreInner(
-    haystack,
+  return commandScorePrepared(
+    prepareCommandScoreHaystack(string, aliases),
     abbreviation,
-    normalize(haystack),
     normalize(abbreviation),
+  )
+}
+
+export const prepareCommandScoreHaystack = (
+  string: string,
+  aliases: readonly string[],
+): PreparedCommandScoreHaystack => {
+  const haystack = aliases.length > 0 ? `${string} ${aliases.join(' ')}` : string
+  return {
+    haystack,
+    normalizedHaystack: normalize(haystack),
+  }
+}
+
+export const commandScorePrepared = (
+  prepared: PreparedCommandScoreHaystack,
+  abbreviation: string,
+  normalizedAbbreviation: string,
+): number =>
+  commandScoreInner(
+    prepared.haystack,
+    abbreviation,
+    prepared.normalizedHaystack,
+    normalizedAbbreviation,
     0,
     0,
     {},
   )
-}

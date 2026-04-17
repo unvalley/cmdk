@@ -1,4 +1,5 @@
-import { commandScore } from './score'
+import { normalize } from './normalize'
+import { commandScore, commandScorePrepared, prepareCommandScoreHaystack } from './score'
 import type {
   CommandOptions,
   CommandState,
@@ -26,8 +27,11 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
   let filteredOrder: string[] = []
   let visibleSet: Set<string> = new Set()
   let navigableOrder: string[] = []
+  let navigableIndex: Map<string, number> = new Map()
   let visibleGroups: Set<string> = new Set()
   let initialized = false
+
+  const preparedScoreHaystacks = new Map<string, ReturnType<typeof prepareCommandScoreHaystack>>()
 
   const listeners = new Set<() => void>()
 
@@ -36,48 +40,73 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
   }
 
   const recompute = (): void => {
-    // Score every item
-    for (const item of items.values()) {
-      if (!shouldFilter || search === '') {
+    const nextFilteredOrder: string[] = []
+    const nextVisibleSet: Set<string> = new Set()
+    const nextNavigableOrder: string[] = []
+    const nextNavigableIndex: Map<string, number> = new Map()
+    const nextVisibleGroups: Set<string> = new Set()
+
+    if (!shouldFilter || search === '') {
+      for (const item of items.values()) {
         item.score = 1
-      } else {
+        nextFilteredOrder.push(item.value)
+        nextVisibleSet.add(item.value)
+        if (item.groupId) nextVisibleGroups.add(item.groupId)
+        if (!item.disabled) {
+          nextNavigableIndex.set(item.value, nextNavigableOrder.length)
+          nextNavigableOrder.push(item.value)
+        }
+      }
+    } else {
+      const normalizedSearch = filter === commandScore ? normalize(search) : ''
+      const visible: ItemData[] = []
+
+      for (const item of items.values()) {
         try {
-          item.score = filter(item.value, search, item.keywords ?? [])
+          item.score =
+            filter === commandScore
+              ? commandScorePrepared(getPreparedScoreHaystack(item), search, normalizedSearch)
+              : filter(item.value, search, item.keywords ?? [])
         } catch (err) {
           if (isDev) {
             console.warn(`cmdk: filter threw for value "${item.value}":`, err)
           }
           item.score = 0
         }
+
+        if (item.forceMount || item.score > 0) visible.push(item)
+      }
+
+      visible.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score
+        return a.order - b.order
+      })
+
+      for (const item of visible) {
+        nextFilteredOrder.push(item.value)
+        nextVisibleSet.add(item.value)
+        if (item.groupId) nextVisibleGroups.add(item.groupId)
+        if (!item.disabled) {
+          nextNavigableIndex.set(item.value, nextNavigableOrder.length)
+          nextNavigableOrder.push(item.value)
+        }
       }
     }
 
-    // Build filteredOrder: visible items, score desc, then insertion order
-    const visible: ItemData[] = []
-    for (const item of items.values()) {
-      if (item.forceMount || item.score > 0) visible.push(item)
-    }
-    visible.sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score
-      return a.order - b.order
-    })
-    filteredOrder = visible.map((i) => i.value)
-    visibleSet = new Set(filteredOrder)
-    navigableOrder = visible.filter((i) => !i.disabled).map((i) => i.value)
-
-    // visibleGroups: any group containing a visible item, plus forceMount groups
-    visibleGroups = new Set()
     for (const g of groups.values()) {
-      if (g.forceMount) visibleGroups.add(g.id)
+      if (g.forceMount) nextVisibleGroups.add(g.id)
     }
-    for (const item of visible) {
-      if (item.groupId) visibleGroups.add(item.groupId)
-    }
+
+    filteredOrder = nextFilteredOrder
+    visibleSet = nextVisibleSet
+    navigableOrder = nextNavigableOrder
+    navigableIndex = nextNavigableIndex
+    visibleGroups = nextVisibleGroups
 
     // Auto-correct selection if the previously-selected value is no longer navigable.
     // Skip during initial recompute (respect options.value).
     // Skip if user has never made a selection (initial mount has no highlight).
-    if (initialized && hasBeenSelected && !navigableOrder.includes(value)) {
+    if (initialized && hasBeenSelected && !navigableIndex.has(value)) {
       const next = navigableOrder[0] ?? ''
       if (next !== value) {
         value = next
@@ -113,12 +142,14 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
       order: nextOrder++,
       score: 0,
     }
+    preparedScoreHaystacks.delete(input.value)
     items.set(input.value, data)
     recompute()
     notify()
     return () => {
       if (items.get(input.value) === data) {
         items.delete(input.value)
+        preparedScoreHaystacks.delete(input.value)
         recompute()
         notify()
       }
@@ -148,7 +179,34 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
   const updateItem = (itemValue: string, patch: Partial<Omit<ItemInput, 'value'>>): void => {
     const existing = items.get(itemValue)
     if (!existing) return
-    items.set(itemValue, { ...existing, ...patch })
+    let changed = false
+    const next = { ...existing }
+
+    if ('keywords' in patch && !Object.is(existing.keywords, patch.keywords)) {
+      next.keywords = patch.keywords
+      preparedScoreHaystacks.delete(itemValue)
+      changed = true
+    }
+    if ('groupId' in patch && !Object.is(existing.groupId, patch.groupId)) {
+      next.groupId = patch.groupId
+      changed = true
+    }
+    if ('disabled' in patch && !Object.is(existing.disabled, patch.disabled)) {
+      next.disabled = patch.disabled
+      changed = true
+    }
+    if ('forceMount' in patch && !Object.is(existing.forceMount, patch.forceMount)) {
+      next.forceMount = patch.forceMount
+      changed = true
+    }
+    if ('onSelect' in patch && !Object.is(existing.onSelect, patch.onSelect)) {
+      next.onSelect = patch.onSelect
+      changed = true
+    }
+
+    if (!changed) return
+
+    items.set(itemValue, next)
     recompute()
     notify()
   }
@@ -191,7 +249,7 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
     notify()
   }
 
-  const currentIndex = (): number => navigableOrder.indexOf(value)
+  const currentIndex = (): number => navigableIndex.get(value) ?? -1
 
   const selectFirst = (): void => {
     const first = navigableOrder[0]
@@ -254,6 +312,17 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
     const item = items.get(value)
     if (!item || item.disabled) return
     item.onSelect?.(value, event)
+  }
+
+  const getPreparedScoreHaystack = (
+    item: ItemData,
+  ): ReturnType<typeof prepareCommandScoreHaystack> => {
+    const cached = preparedScoreHaystacks.get(item.value)
+    if (cached) return cached
+
+    const prepared = prepareCommandScoreHaystack(item.value, item.keywords ?? [])
+    preparedScoreHaystacks.set(item.value, prepared)
+    return prepared
   }
 
   recompute()

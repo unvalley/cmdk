@@ -1,5 +1,5 @@
 import type { CommandStore } from '@unvalley/cmdk-core'
-import { createContext, useContext, useSyncExternalStore } from 'react'
+import { createContext, useCallback, useContext, useSyncExternalStore } from 'react'
 
 export const CommandContext = createContext<CommandStore | null>(null)
 
@@ -26,9 +26,15 @@ export const useCommandStore = (): CommandStore => {
  */
 export const useCommandSlice = <T>(selector: (store: CommandStore) => T): T => {
   const store = useCommandStore()
-  return useSyncExternalStore(
-    store.subscribe,
-    () => selector(store),
-    () => selector(store),
+  const subscribe = useCallback(
+    (onStoreChange: () => void) =>
+      store.subscribeSlice(
+        () => selector(store),
+        () => onStoreChange(),
+      ),
+    [store, selector],
   )
+  const getSnapshot = useCallback(() => selector(store), [store, selector])
+
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 }

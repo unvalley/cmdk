@@ -75,4 +75,13 @@ describe('createCommand: registration', () => {
     cmd.updateItem('apple', { disabled: true })
     expect(cmd.getState().items.get('apple')?.disabled).toBe(true)
   })
+
+  it('updateItem is a no-op when the patch does not change state', () => {
+    const cmd = createCommand()
+    cmd.registerItem({ value: 'apple', disabled: false })
+    const listener = vi.fn()
+    cmd.subscribe(listener)
+    cmd.updateItem('apple', { disabled: false })
+    expect(listener).not.toHaveBeenCalled()
+  })
 })
