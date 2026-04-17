@@ -2,13 +2,13 @@ import { type CommandOptions, type CommandStore, createCommand } from '@unvalley
 import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef } from 'react'
 import { CommandContext } from './context'
 
-export interface CommandProps extends CommandOptions {
+export type CommandProps = CommandOptions & {
   label?: string
   className?: string
   children?: ReactNode
 }
 
-export function Command({ label, className, children, ...options }: CommandProps): ReactNode {
+export const Command = ({ label, className, children, ...options }: CommandProps): ReactNode => {
   // Create store once. We pass *initial* options only; controlled props are
   // synced via effects below.
   // biome-ignore lint/correctness/useExhaustiveDependencies: store is intentionally created once

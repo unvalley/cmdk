@@ -13,7 +13,7 @@ const IS_GAP_REGEXP = /[\\/_+.#"@[({&]/
 const COUNT_GAPS_REGEXP = /[\\/_+.#"@[({&]/g
 const IS_SPACE_REGEXP = /[\s-]/
 
-function commandScoreInner(
+const commandScoreInner = (
   string: string,
   abbreviation: string,
   lowerString: string,
@@ -21,7 +21,7 @@ function commandScoreInner(
   stringIndex: number,
   abbreviationIndex: number,
   memoizedResults: Record<string, number>,
-): number {
+): number => {
   if (abbreviationIndex === abbreviation.length) {
     if (stringIndex === string.length) return SCORE_CONTINUE_MATCH
     return PENALTY_NOT_COMPLETE
@@ -116,11 +116,11 @@ function commandScoreInner(
  *
  * Ported from pacocoursey/cmdk (MIT).
  */
-export function commandScore(
+export const commandScore = (
   string: string,
   abbreviation: string,
   aliases: readonly string[],
-): number {
+): number => {
   const haystack = aliases && aliases.length > 0 ? `${string} ${aliases.join(' ')}` : string
   return commandScoreInner(
     haystack,

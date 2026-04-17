@@ -11,7 +11,7 @@ import type {
 
 const isDev = process.env.NODE_ENV !== 'production'
 
-export function createCommand(options: CommandOptions = {}): CommandStore {
+export const createCommand = (options: CommandOptions = {}): CommandStore => {
   const filter = options.filter ?? commandScore
   const shouldFilter = options.shouldFilter ?? true
   const pointerSelection = options.pointerSelection ?? 'hover'
@@ -31,11 +31,11 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
 
   const listeners = new Set<() => void>()
 
-  function notify(): void {
+  const notify = (): void => {
     for (const l of listeners) l()
   }
 
-  function recompute(): void {
+  const recompute = (): void => {
     // Score every item
     for (const item of items.values()) {
       if (!shouldFilter || search === '') {
@@ -88,22 +88,20 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     }
   }
 
-  function getState(): CommandState {
-    return {
-      search,
-      value,
-      items,
-      groups,
-      filteredOrder,
-      visibleSet,
-      navigableOrder,
-      visibleGroups,
-      isComposing,
-      pointerSelection,
-    }
-  }
+  const getState = (): CommandState => ({
+    search,
+    value,
+    items,
+    groups,
+    filteredOrder,
+    visibleSet,
+    navigableOrder,
+    visibleGroups,
+    isComposing,
+    pointerSelection,
+  })
 
-  function registerItem(input: ItemInput): () => void {
+  const registerItem = (input: ItemInput): (() => void) => {
     if (typeof input.value !== 'string') {
       throw new TypeError(`cmdk: item value must be a string, got ${typeof input.value}`)
     }
@@ -127,7 +125,7 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     }
   }
 
-  function registerGroup(input: GroupInput): () => void {
+  const registerGroup = (input: GroupInput): (() => void) => {
     if (typeof input.id !== 'string') {
       throw new TypeError('cmdk: group id must be a string')
     }
@@ -147,7 +145,7 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     }
   }
 
-  function updateItem(itemValue: string, patch: Partial<Omit<ItemInput, 'value'>>): void {
+  const updateItem = (itemValue: string, patch: Partial<Omit<ItemInput, 'value'>>): void => {
     const existing = items.get(itemValue)
     if (!existing) return
     items.set(itemValue, { ...existing, ...patch })
@@ -155,18 +153,18 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     notify()
   }
 
-  function subscribe(listener: () => void): () => void {
+  const subscribe = (listener: () => void): (() => void) => {
     listeners.add(listener)
     return () => {
       listeners.delete(listener)
     }
   }
 
-  function subscribeSlice<T>(
+  const subscribeSlice = <T>(
     selector: (state: CommandState) => T,
     listener: (slice: T) => void,
     isEqual: (a: T, b: T) => boolean = Object.is,
-  ): () => void {
+  ): (() => void) => {
     let prev = selector(getState())
     return subscribe(() => {
       const next = selector(getState())
@@ -177,8 +175,7 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     })
   }
 
-  // Stub mutations — implemented in later tasks
-  function setSearch(next: string): void {
+  const setSearch = (next: string): void => {
     if (next === search) return
     search = next
     recompute()
@@ -186,7 +183,7 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     notify()
   }
 
-  function setValue(next: string): void {
+  const setValue = (next: string): void => {
     if (next === value) return
     if (next !== '') hasBeenSelected = true
     value = next
@@ -194,23 +191,21 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     notify()
   }
 
-  function currentIndex(): number {
-    return navigableOrder.indexOf(value)
-  }
+  const currentIndex = (): number => navigableOrder.indexOf(value)
 
-  function selectFirst(): void {
+  const selectFirst = (): void => {
     const first = navigableOrder[0]
     if (first === undefined) return
     setValue(first)
   }
 
-  function selectLast(): void {
+  const selectLast = (): void => {
     const last = navigableOrder[navigableOrder.length - 1]
     if (last === undefined) return
     setValue(last)
   }
 
-  function selectNext(): void {
+  const selectNext = (): void => {
     if (navigableOrder.length === 0) return
     const idx = currentIndex()
     if (idx === -1) {
@@ -229,7 +224,7 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     if (next !== undefined) setValue(next)
   }
 
-  function selectPrev(): void {
+  const selectPrev = (): void => {
     if (navigableOrder.length === 0) return
     const idx = currentIndex()
     if (idx === -1) {
@@ -248,12 +243,13 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
     if (prev !== undefined) setValue(prev)
   }
 
-  function setComposing(next: boolean): void {
+  const setComposing = (next: boolean): void => {
     if (next === isComposing) return
     isComposing = next
     notify()
   }
-  function triggerSelect(event?: Event): void {
+
+  const triggerSelect = (event?: Event): void => {
     if (value === '') return
     const item = items.get(value)
     if (!item || item.disabled) return

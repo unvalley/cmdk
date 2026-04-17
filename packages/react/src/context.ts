@@ -3,7 +3,7 @@ import { createContext, useContext, useSyncExternalStore } from 'react'
 
 export const CommandContext = createContext<CommandStore | null>(null)
 
-export function useCommandStore(): CommandStore {
+export const useCommandStore = (): CommandStore => {
   const store = useContext(CommandContext)
   if (!store) {
     throw new Error('cmdk: component must be rendered inside <Command>')
@@ -17,7 +17,7 @@ export function useCommandStore(): CommandStore {
  * re-renders when the slice is unchanged. This is what fixes #377
  * (re-renders on every hover) when used per-item.
  */
-export function useCommandSlice<T>(selector: (store: CommandStore) => T): T {
+export const useCommandSlice = <T>(selector: (store: CommandStore) => T): T => {
   const store = useCommandStore()
   return useSyncExternalStore(
     store.subscribe,

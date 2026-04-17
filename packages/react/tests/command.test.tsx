@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { Command } from '../src/command'
-import { Command as CompoundCommand } from '../src/index'
+import * as cmdk from '../src/index'
 import { Input } from '../src/input'
 
 describe('<Command>', () => {
@@ -56,14 +56,17 @@ describe('<Command.Input>', () => {
   })
 })
 
-describe('compound API', () => {
-  it('Command.Input/List/Item/Group/Empty/Loading/Separator are accessible', () => {
-    expect(CompoundCommand.Input).toBeDefined()
-    expect(CompoundCommand.List).toBeDefined()
-    expect(CompoundCommand.Item).toBeDefined()
-    expect(CompoundCommand.Group).toBeDefined()
-    expect(CompoundCommand.Empty).toBeDefined()
-    expect(CompoundCommand.Loading).toBeDefined()
-    expect(CompoundCommand.Separator).toBeDefined()
+describe('public exports', () => {
+  it('exposes all components as named exports', () => {
+    expect(cmdk.Command).toBeDefined()
+    expect(cmdk.Input).toBeDefined()
+    expect(cmdk.List).toBeDefined()
+    expect(cmdk.Item).toBeDefined()
+    expect(cmdk.Group).toBeDefined()
+    expect(cmdk.Empty).toBeDefined()
+    expect(cmdk.Loading).toBeDefined()
+    expect(cmdk.Separator).toBeDefined()
+    expect(cmdk.useCommandStore).toBeDefined()
+    expect(cmdk.useCommandSlice).toBeDefined()
   })
 })

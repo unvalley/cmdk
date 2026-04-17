@@ -1,7 +1,16 @@
-import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useId, useRef } from 'react'
+import {
+  type HTMLAttributes,
+  type MouseEvent,
+  type ReactNode,
+  type Ref,
+  useEffect,
+  useId,
+  useRef,
+} from 'react'
 import { useCommandSlice, useCommandStore } from './context'
 
-export interface ItemProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
+export type ItemProps = Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> & {
+  ref?: Ref<HTMLDivElement>
   value: string
   keywords?: readonly string[]
   disabled?: boolean
@@ -11,10 +20,17 @@ export interface ItemProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelec
   children?: ReactNode
 }
 
-export const Item = forwardRef<HTMLDivElement, ItemProps>(function Item(
-  { value, keywords, disabled, forceMount, groupId, onSelect, children, ...rest },
+export const Item = ({
   ref,
-) {
+  value,
+  keywords,
+  disabled,
+  forceMount,
+  groupId,
+  onSelect,
+  children,
+  ...rest
+}: ItemProps) => {
   const store = useCommandStore()
   const id = useId()
 
@@ -54,7 +70,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(function Item(
     store.setValue(value)
   }
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>): void => {
+  const handleClick = (e: MouseEvent<HTMLDivElement>): void => {
     if (disabled) return
     store.setValue(value)
     store.triggerSelect(e.nativeEvent)
@@ -79,4 +95,4 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(function Item(
       {children}
     </div>
   )
-})
+}

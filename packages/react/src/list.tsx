@@ -1,16 +1,12 @@
-import { forwardRef, type HTMLAttributes, type ReactNode } from 'react'
+import type { HTMLAttributes, ReactNode, Ref } from 'react'
 
-export interface ListProps extends HTMLAttributes<HTMLDivElement> {
+export type ListProps = HTMLAttributes<HTMLDivElement> & {
+  ref?: Ref<HTMLDivElement>
   children?: ReactNode
 }
 
-export const List = forwardRef<HTMLDivElement, ListProps>(function List(
-  { children, ...rest },
-  ref,
-) {
-  return (
-    <div ref={ref} cmdk-list="" role="listbox" {...rest}>
-      {children}
-    </div>
-  )
-})
+export const List = ({ ref, children, ...rest }: ListProps) => (
+  <div ref={ref} cmdk-list="" role="listbox" {...rest}>
+    {children}
+  </div>
+)

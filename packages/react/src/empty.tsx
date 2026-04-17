@@ -1,14 +1,12 @@
-import { forwardRef, type HTMLAttributes, type ReactNode } from 'react'
+import type { HTMLAttributes, ReactNode, Ref } from 'react'
 import { useCommandSlice } from './context'
 
-export interface EmptyProps extends HTMLAttributes<HTMLDivElement> {
+export type EmptyProps = HTMLAttributes<HTMLDivElement> & {
+  ref?: Ref<HTMLDivElement>
   children?: ReactNode
 }
 
-export const Empty = forwardRef<HTMLDivElement, EmptyProps>(function Empty(
-  { children, ...rest },
-  ref,
-) {
+export const Empty = ({ ref, children, ...rest }: EmptyProps) => {
   const isEmpty = useCommandSlice((s) => s.getState().filteredOrder.length === 0)
   if (!isEmpty) return null
   return (
@@ -16,4 +14,4 @@ export const Empty = forwardRef<HTMLDivElement, EmptyProps>(function Empty(
       {children}
     </div>
   )
-})
+}

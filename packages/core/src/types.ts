@@ -4,7 +4,7 @@ export type FilterFn = (value: string, search: string, keywords: readonly string
 /** Behavior when arrow keys reach the boundary. */
 export type PointerSelectionMode = 'hover' | 'click'
 
-export interface ItemInput {
+export type ItemInput = {
   /** Stable identity. Required, can be ''. Never used as a CSS selector. */
   value: string
   /** Aliases that affect filter scoring. */
@@ -19,25 +19,25 @@ export interface ItemInput {
   onSelect?: (value: string, event?: Event) => void
 }
 
-export interface ItemData extends ItemInput {
+export type ItemData = ItemInput & {
   /** Insertion order, used for stable secondary sort. */
   order: number
   /** Latest computed score. 0 means "not visible". */
   score: number
 }
 
-export interface GroupInput {
+export type GroupInput = {
   /** Stable identity. Required. */
   id: string
   /** When true, group is always visible even if all its items are filtered out. */
   forceMount?: boolean
 }
 
-export interface GroupData extends GroupInput {
+export type GroupData = GroupInput & {
   order: number
 }
 
-export interface CommandOptions {
+export type CommandOptions = {
   /** Run the filter? Default true. Set false when caller filters externally. */
   shouldFilter?: boolean
   /** Custom scorer. Default = built-in command-score. */
@@ -56,7 +56,7 @@ export interface CommandOptions {
   onSearchChange?: (search: string) => void
 }
 
-export interface CommandState {
+export type CommandState = {
   search: string
   /** Currently highlighted item's value. '' if none. */
   value: string
@@ -76,35 +76,35 @@ export interface CommandState {
   pointerSelection: PointerSelectionMode
 }
 
-export interface CommandStore {
+export type CommandStore = {
   // Item / group registration
-  registerItem(item: ItemInput): () => void
-  registerGroup(group: GroupInput): () => void
-  updateItem(value: string, patch: Partial<Omit<ItemInput, 'value'>>): void
+  registerItem: (item: ItemInput) => () => void
+  registerGroup: (group: GroupInput) => () => void
+  updateItem: (value: string, patch: Partial<Omit<ItemInput, 'value'>>) => void
 
   // State mutations
-  setSearch(search: string): void
-  setValue(value: string): void
-  setComposing(isComposing: boolean): void
+  setSearch: (search: string) => void
+  setValue: (value: string) => void
+  setComposing: (isComposing: boolean) => void
 
   // Selection navigation (operates over filteredOrder)
-  selectNext(): void
-  selectPrev(): void
-  selectFirst(): void
-  selectLast(): void
-  triggerSelect(event?: Event): void
+  selectNext: () => void
+  selectPrev: () => void
+  selectFirst: () => void
+  selectLast: () => void
+  triggerSelect: (event?: Event) => void
 
   // State access
-  getState(): CommandState
-  subscribe(listener: () => void): () => void
+  getState: () => CommandState
+  subscribe: (listener: () => void) => () => void
   /**
    * Subscribe to a slice of state. The listener is called with the initial slice
    * value and again whenever the computed slice changes (per `isEqual`, which
    * defaults to Object.is). Returns an unsubscribe function.
    */
-  subscribeSlice<T>(
+  subscribeSlice: <T>(
     selector: (state: CommandState) => T,
     listener: (slice: T) => void,
     isEqual?: (a: T, b: T) => boolean,
-  ): () => void
+  ) => () => void
 }

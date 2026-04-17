@@ -1,22 +1,18 @@
-import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useId } from 'react'
+import { type HTMLAttributes, type ReactNode, type Ref, useEffect, useId } from 'react'
 import { useCommandSlice, useCommandStore } from './context'
 
-export interface GroupProps extends HTMLAttributes<HTMLDivElement> {
+export type GroupProps = HTMLAttributes<HTMLDivElement> & {
+  ref?: Ref<HTMLDivElement>
   heading?: ReactNode
   forceMount?: boolean
   children?: ReactNode
 }
 
-export const Group = forwardRef<HTMLDivElement, GroupProps>(function Group(
-  { heading, forceMount, children, ...rest },
-  ref,
-) {
+export const Group = ({ ref, heading, forceMount, children, ...rest }: GroupProps) => {
   const store = useCommandStore()
   const id = useId()
 
-  useEffect(() => {
-    return store.registerGroup({ id, forceMount })
-  }, [store, id, forceMount])
+  useEffect(() => store.registerGroup({ id, forceMount }), [store, id, forceMount])
 
   const isVisible = useCommandSlice((s) => s.getState().visibleGroups.has(id))
 
@@ -39,4 +35,4 @@ export const Group = forwardRef<HTMLDivElement, GroupProps>(function Group(
       </div>
     </div>
   )
-})
+}
