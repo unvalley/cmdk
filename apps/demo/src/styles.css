@@ -1,13 +1,27 @@
 :root {
-  --bg: #0b0b10;
-  --bg-elevated: #16161d;
-  --bg-hover: #1f1f29;
-  --border: #272733;
-  --fg: #e8e8ea;
-  --fg-muted: #8d8d99;
-  --accent: #7c7cff;
+  --bg: #fafafa;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f1f1f4;
+  --border: #e4e4e7;
+  --fg: #09090b;
+  --fg-muted: #71717a;
+  --accent: #6366f1;
   --radius: 10px;
-  color-scheme: dark;
+  --backdrop: rgba(24, 24, 27, 0.35);
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0b10;
+    --bg-elevated: #16161d;
+    --bg-hover: #1f1f29;
+    --border: #272733;
+    --fg: #e8e8ea;
+    --fg-muted: #8d8d99;
+    --accent: #7c7cff;
+    --backdrop: rgba(5, 5, 8, 0.6);
+  }
 }
 
 * {
@@ -216,11 +230,11 @@ kbd {
   padding: 0;
   margin: auto;
   width: min(560px, calc(100vw - 32px));
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.3);
 }
 
 [cmdk-dialog]::backdrop {
-  background: rgba(5, 5, 8, 0.6);
+  background: var(--backdrop);
   backdrop-filter: blur(4px);
 }
 
