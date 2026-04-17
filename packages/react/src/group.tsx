@@ -34,11 +34,7 @@ export const Group = forwardRef<HTMLDivElement, GroupProps>(function Group(
           {heading}
         </div>
       )}
-      <div
-        cmdk-group-items=""
-        role="group"
-        aria-labelledby={heading != null ? id : undefined}
-      >
+      <div cmdk-group-items="" role="group" aria-labelledby={heading != null ? id : undefined}>
         {children}
       </div>
     </div>

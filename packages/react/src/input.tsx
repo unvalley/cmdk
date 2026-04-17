@@ -21,9 +21,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 ) {
   const store = useCommandStore()
   const search = useCommandSlice((s) => s.getState().search)
-  const hasVisibleItems = useCommandSlice(
-    (s) => s.getState().filteredOrder.length > 0,
-  )
+  const hasVisibleItems = useCommandSlice((s) => s.getState().filteredOrder.length > 0)
   const pendingValueRef = useRef<string>('')
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
