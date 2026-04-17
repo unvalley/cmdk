@@ -1,5 +1,5 @@
 import { normalize } from './normalize'
-import type { FilterMode } from './types'
+import type { CommandFilter, FilterFn } from './types'
 
 const SCORE_CONTINUE_MATCH = 1
 const SCORE_SPACE_WORD_JUMP = 0.9
@@ -186,7 +186,7 @@ export const commandBuiltInScorePrepared = (
   prepared: PreparedCommandScoreHaystack,
   abbreviation: string,
   normalizedAbbreviation: string,
-  mode: Exclude<FilterMode, 'none'>,
+  mode: Exclude<CommandFilter, FilterFn | 'none'>,
 ): number => {
   switch (mode) {
     case 'fuzzy':

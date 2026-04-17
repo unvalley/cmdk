@@ -1,11 +1,8 @@
 /** Default scorer signature. Return 0 to hide an item; > 0 to show (higher = better). */
 export type FilterFn = (value: string, search: string, keywords: readonly string[]) => number
 
-/** Built-in filter behaviors. */
-export type FilterMode = 'fuzzy' | 'contains' | 'none'
-
-/** Behavior when arrow keys reach the boundary. */
-export type PointerSelectionMode = 'hover' | 'click'
+/** Built-in filters plus a custom scorer. */
+export type CommandFilter = FilterFn | 'fuzzy' | 'contains' | 'none'
 
 export type ItemInput = {
   /** Stable identity. Required, can be ''. Never used as a CSS selector. */
@@ -40,19 +37,17 @@ export type GroupData = GroupInput & {
   order: number
 }
 
-export type CommandOptions = {
-  /** Built-in filter behavior. Default 'fuzzy'. Set 'none' when caller filters externally. */
-  filterMode?: FilterMode
-  /** Custom scorer. Overrides built-in filtering unless filterMode is 'none'. */
-  filter?: FilterFn
+export type CommandStoreOptions = {
+  /** Initial highlighted value. */
+  initialValue?: string
+  /** Initial search query. */
+  initialSearch?: string
+  /** Built-in filter or custom scorer. Default 'fuzzy'. */
+  filter?: CommandFilter
   /** Wrap arrow-key navigation past the ends. Default false. */
   loop?: boolean
-  /** 'hover' (default) selects on pointer move; 'click' only on click (Raycast-style). */
-  pointerSelection?: PointerSelectionMode
-  /** Initial controlled value. */
-  value?: string
-  /** Initial controlled search. */
-  search?: string
+  /** When true, pointer hover updates selection. Default true. */
+  selectOnHover?: boolean
   /** Called whenever the highlighted value changes. */
   onValueChange?: (value: string) => void
   /** Called whenever the search query changes. */
@@ -75,8 +70,8 @@ export type CommandState = {
   visibleGroups: ReadonlySet<string>
   /** True while an IME composition is in progress (input adapter sets this). */
   isComposing: boolean
-  /** Pointer selection mode set at construction time. */
-  pointerSelection: PointerSelectionMode
+  /** Whether pointer hover updates selection. */
+  selectOnHover: boolean
 }
 
 export type CommandStore = {
@@ -87,8 +82,8 @@ export type CommandStore = {
   updateOptions: (
     options: Partial<
       Pick<
-        CommandOptions,
-        'filter' | 'filterMode' | 'loop' | 'pointerSelection' | 'onSearchChange' | 'onValueChange'
+        CommandStoreOptions,
+        'filter' | 'loop' | 'selectOnHover' | 'onSearchChange' | 'onValueChange'
       >
     >,
   ) => void

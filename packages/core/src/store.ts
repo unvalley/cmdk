@@ -1,9 +1,11 @@
 import { normalize } from './normalize'
 import { commandBuiltInScorePrepared, prepareCommandScoreHaystack } from './score'
 import type {
-  CommandOptions,
+  CommandFilter,
   CommandState,
   CommandStore,
+  CommandStoreOptions,
+  FilterFn,
   GroupData,
   GroupInput,
   ItemData,
@@ -11,20 +13,23 @@ import type {
 } from './types'
 
 const isDev = process.env.NODE_ENV !== 'production'
+const DEFAULT_FILTER: Exclude<CommandFilter, FilterFn> = 'fuzzy'
 
-export const createCommand = (options: CommandOptions = {}): CommandStore => {
-  let filterMode = options.filterMode ?? 'fuzzy'
-  let filter = filterMode === 'none' ? null : options.filter
+const isBuiltInFilter = (filter: CommandFilter): filter is Exclude<CommandFilter, FilterFn> =>
+  typeof filter === 'string'
+
+export const createCommand = (options: CommandStoreOptions = {}): CommandStore => {
+  let filter = options.filter ?? DEFAULT_FILTER
   let loop = options.loop ?? false
-  let pointerSelection = options.pointerSelection ?? 'hover'
+  let selectOnHover = options.selectOnHover ?? true
   let onValueChange = options.onValueChange
   let onSearchChange = options.onSearchChange
 
   let nextOrder = 0
   const items = new Map<string, ItemData>()
   const groups = new Map<string, GroupData>()
-  let search = options.search ?? ''
-  let value = options.value ?? ''
+  let search = options.initialSearch ?? ''
+  let value = options.initialValue ?? ''
   let hasBeenSelected = value !== '' // true if controlled with non-empty initial
   let isComposing = false
   let filteredOrder: string[] = []
@@ -49,7 +54,7 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
     const nextNavigableIndex: Map<string, number> = new Map()
     const nextVisibleGroups: Set<string> = new Set()
 
-    if (filterMode === 'none' || search === '') {
+    if (filter === 'none' || search === '') {
       for (const item of items.values()) {
         item.score = 1
         nextFilteredOrder.push(item.value)
@@ -61,20 +66,19 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
         }
       }
     } else {
-      const normalizedSearch = filter == null ? normalize(search) : ''
+      const normalizedSearch = isBuiltInFilter(filter) ? normalize(search) : ''
       const visible: ItemData[] = []
 
       for (const item of items.values()) {
         try {
-          item.score =
-            filter == null
-              ? commandBuiltInScorePrepared(
-                  getPreparedScoreHaystack(item),
-                  search,
-                  normalizedSearch,
-                  filterMode,
-                )
-              : filter(item.value, search, item.keywords ?? [])
+          item.score = isBuiltInFilter(filter)
+            ? commandBuiltInScorePrepared(
+                getPreparedScoreHaystack(item),
+                search,
+                normalizedSearch,
+                filter,
+              )
+            : filter(item.value, search, item.keywords ?? [])
         } catch (err) {
           if (isDev) {
             console.warn(`cmdk: filter threw for value "${item.value}":`, err)
@@ -112,7 +116,7 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
     visibleGroups = nextVisibleGroups
 
     // Auto-correct selection if the previously-selected value is no longer navigable.
-    // Skip during initial recompute (respect options.value).
+    // Skip during initial recompute (respect options.initialValue).
     // Skip if user has never made a selection (initial mount has no highlight).
     if (initialized && hasBeenSelected && !navigableIndex.has(value)) {
       const next = navigableOrder[0] ?? ''
@@ -135,7 +139,7 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
     navigableOrder,
     visibleGroups,
     isComposing,
-    pointerSelection,
+    selectOnHover,
   })
 
   const registerItem = (input: ItemInput): (() => void) => {
@@ -222,26 +226,24 @@ export const createCommand = (options: CommandOptions = {}): CommandStore => {
   const updateOptions = (
     patch: Partial<
       Pick<
-        CommandOptions,
-        'filter' | 'filterMode' | 'loop' | 'pointerSelection' | 'onSearchChange' | 'onValueChange'
+        CommandStoreOptions,
+        'filter' | 'loop' | 'selectOnHover' | 'onSearchChange' | 'onValueChange'
       >
     >,
   ): void => {
-    const nextFilterMode = 'filterMode' in patch ? (patch.filterMode ?? 'fuzzy') : filterMode
-    const nextFilter = nextFilterMode === 'none' ? null : 'filter' in patch ? patch.filter : filter
+    const nextFilter = 'filter' in patch ? (patch.filter ?? DEFAULT_FILTER) : filter
     const nextLoop = 'loop' in patch ? (patch.loop ?? false) : loop
-    const nextPointerSelection =
-      'pointerSelection' in patch ? (patch.pointerSelection ?? 'hover') : pointerSelection
+    const nextSelectOnHover =
+      'selectOnHover' in patch ? (patch.selectOnHover ?? true) : selectOnHover
     const nextOnValueChange = 'onValueChange' in patch ? patch.onValueChange : onValueChange
     const nextOnSearchChange = 'onSearchChange' in patch ? patch.onSearchChange : onSearchChange
 
-    const needsRecompute = nextFilterMode !== filterMode || nextFilter !== filter
-    const needsNotify = needsRecompute || nextPointerSelection !== pointerSelection
+    const needsRecompute = nextFilter !== filter
+    const needsNotify = needsRecompute || nextSelectOnHover !== selectOnHover
 
-    filterMode = nextFilterMode
     filter = nextFilter
     loop = nextLoop
-    pointerSelection = nextPointerSelection
+    selectOnHover = nextSelectOnHover
     onValueChange = nextOnValueChange
     onSearchChange = nextOnSearchChange
 

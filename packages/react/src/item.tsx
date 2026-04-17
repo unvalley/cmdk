@@ -63,14 +63,13 @@ export const CommandItem = ({
 
   const isVisible = useCommandSlice((s) => s.visibleSet.has(value))
   const isSelected = useCommandSlice((s) => s.value === value)
-  const pointerMode = useCommandSlice((s) => s.pointerSelection)
+  const selectOnHover = useCommandSlice((s) => s.selectOnHover)
 
   if (!isVisible) return null
 
   const handlePointerMove = (): void => {
     if (disabled) return
-    // Default mode is 'hover' (cmdk-compat). Only skip when explicitly 'click'.
-    if (pointerMode === 'click') return
+    if (!selectOnHover) return
     store.setValue(value)
   }
 

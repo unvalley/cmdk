@@ -25,8 +25,8 @@ describe('createCommand: search + filter', () => {
     expect(cmd.getState().filteredOrder[0]).toBe('apple banana')
   })
 
-  it('respects filterMode: none', () => {
-    const cmd = createCommand({ filterMode: 'none' })
+  it('respects filter: none', () => {
+    const cmd = createCommand({ filter: 'none' })
     cmd.registerItem({ value: 'apple' })
     cmd.registerItem({ value: 'xyz' })
     cmd.setSearch('app')
@@ -44,7 +44,7 @@ describe('createCommand: search + filter', () => {
   })
 
   it('supports built-in contains mode', () => {
-    const cmd = createCommand({ filterMode: 'contains' })
+    const cmd = createCommand({ filter: 'contains' })
     cmd.registerItem({ value: 'apple' })
     cmd.registerItem({ value: 'pineapple' })
     cmd.registerItem({ value: 'banana' })
@@ -53,7 +53,7 @@ describe('createCommand: search + filter', () => {
   })
 
   it('contains mode prefers boundary matches over inline matches', () => {
-    const cmd = createCommand({ filterMode: 'contains' })
+    const cmd = createCommand({ filter: 'contains' })
     cmd.registerItem({ value: 'foo/bar' })
     cmd.registerItem({ value: 'foobar' })
     cmd.setSearch('bar')

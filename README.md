@@ -1,19 +1,18 @@
 # cmdk
 
-Library-agnostic command menu primitives:
+Framework-agnostic command menu primitives.
 
-- `@unvalley/cmdk-core`: filtering, ordering, selection, IME handling, registration
-- `@unvalley/cmdk-react`: unstyled React components on top of the core store
+- `@unvalley/cmdk-core`: store, filtering, ordering, selection, IME handling
+- `@unvalley/cmdk-react`: unstyled React components built on that store
 
 ## Install
 
 ```bash
 pnpm add @unvalley/cmdk-core
-# depends on the ui library you use
-pnpm add @unvalley/cmdk-react
+pnpm add @unvalley/cmdk-react react react-dom
 ```
 
-## React Quick Start
+## React
 
 ```tsx
 import {
@@ -44,7 +43,7 @@ export function CommandMenu() {
 }
 ```
 
-For a modal command palette, use `CommandDialog`.
+For modal usage:
 
 ```tsx
 <CommandDialog open={open} onOpenChange={setOpen} label="Global Command Menu">
@@ -56,108 +55,49 @@ For a modal command palette, use `CommandDialog`.
 </CommandDialog>
 ```
 
-## Core Quick Start
-
-```ts
-import { createCommand } from '@unvalley/cmdk-core'
-
-const command = createCommand({
-  onSearchChange: (search) => console.log(search),
-  onValueChange: (value) => console.log(value),
-})
-
-command.registerItem({ value: 'apple' })
-command.registerItem({ value: 'banana', keywords: ['fruit'] })
-
-command.setSearch('app')
-command.selectFirst()
-command.triggerSelect()
-```
-
-## Filtering
-
-Built-in filtering is controlled by `filterMode`:
-
-```tsx
-<Command filterMode="fuzzy" />
-<Command filterMode="contains" />
-<Command filterMode="none" />
-```
-
-- `fuzzy`: default fuzzy scorer
-- `contains`: normalized substring matching, with a slight preference for matches at the start or after a separator
-- `none`: disables internal filtering and sorting
-
-Custom filters are also supported:
-
-```tsx
-<Command filter={(value, search, keywords) => (`${value} ${keywords.join(' ')}`).includes(search) ? 1 : 0} />
-```
-
-Rules:
-
-- `0` hides an item
-- `> 0` keeps it visible
-- higher scores sort earlier
-- built-in modes normalize diacritics, so `cafe` matches `café`
-
-## React API
-
-### `Command`
-
-Root component. It owns keyboard navigation, filtering, and highlighted value.
-
-Props:
+### `Command` props
 
 - `label?: string`
-  Accessible label for the root command surface.
+  Accessible label for the command surface.
 - `value?: string`
-  Controlled highlighted item value. Use with `onValueChange`.
-- `search?: string`
-  Controlled search query. Use with `onSearchChange`.
+  Controlled highlighted item value.
+- `defaultValue?: string`
+  Initial highlighted item value for uncontrolled usage.
 - `onValueChange?: (value: string) => void`
-  Called whenever the highlighted item changes.
+  Called when the highlighted item changes.
+- `search?: string`
+  Controlled search query.
+- `defaultSearch?: string`
+  Initial search query for uncontrolled usage.
 - `onSearchChange?: (search: string) => void`
-  Called whenever the search query changes.
-- `filterMode?: 'fuzzy' | 'contains' | 'none'`
-  Selects the built-in filtering behavior.
-- `filter?: (value, search, keywords) => number`
-  Custom scoring function. Ignored when `filterMode="none"`.
+  Called when the search query changes.
+- `filter?: 'fuzzy' | 'contains' | 'none' | FilterFn`
+  Built-in filter mode or a custom scoring function.
 - `loop?: boolean`
-  Wraps arrow-key navigation from end to start and back.
-- `pointerSelection?: 'hover' | 'click'`
-  `hover` selects items on pointer move. `click` only changes selection on click.
+  Wrap keyboard navigation from end to start and back.
+- `selectOnHover?: boolean`
+  When `true`, pointer hover updates selection. Defaults to `true`.
 
-These props stay in sync after rerender.
+### `CommandInput` props
 
-### `CommandInput`
-
-Search input wired to the command store.
-
-Props:
-
-- all normal `input` props except `onChange`
+- All normal `input` props except `onChange`
 - `value?: string`
   Controlled input value.
 - `onValueChange?: (value: string) => void`
-  Called after the search value is committed.
+  Called after the input value is committed.
 
 IME composition is handled so partial composition does not trigger intermediate search updates.
 
-### `CommandItem`
-
-Selectable result row.
-
-Props:
+### `CommandItem` props
 
 - `value: string`
   Stable item identity.
 - `keywords?: readonly string[]`
-  Extra search aliases.
+  Extra aliases used by filtering.
 - `disabled?: boolean`
-  Keeps the item rendered but removes it from keyboard navigation and selection.
+  Renders the item but removes it from selection and keyboard navigation.
 - `forceMount?: boolean`
-  Keeps the item visible even when the current filter would hide it.
+  Keeps the item visible even when filtering would hide it.
 - `groupId?: string`
   Explicit group association. Usually inherited from `CommandGroup`.
 - `onSelect?: (value: string, event?: Event) => void`
@@ -165,39 +105,32 @@ Props:
 
 ### `CommandGroup`
 
-Groups related items under an optional `heading`. Hidden automatically when none of its items are visible, unless `forceMount` is set.
+Groups related items under an optional `heading`. Hidden automatically when no item in the group is visible, unless `forceMount` is set.
 
-### `CommandDialog`
+### `CommandDialog` props
 
-Native `<dialog>` wrapper around `Command`.
-
-Extra props:
+Extends `Command` and adds:
 
 - `open: boolean`
-  Controls whether the dialog is shown.
+  Controls whether the dialog is open.
 - `onOpenChange: (open: boolean) => void`
   Called when the dialog opens or closes.
 - `dialogClassName?: string`
-  Class name for the `<dialog>` element itself.
+  Class name for the native `<dialog>`.
 - `resetSearchOnClose?: boolean`
-  Clears uncontrolled search when the dialog closes. Defaults to `true`.
+  Clears uncontrolled search when closing. Defaults to `true`.
 
-### Other components
+Other helpers:
 
 - `CommandList`: listbox wrapper
-- `CommandEmpty`: only renders when there are no visible results
-- `CommandSeparator`: separator, hidden while searching unless `alwaysRender`
-- `CommandLoading`: progressbar helper for loading states
+- `CommandEmpty`: only renders when no visible items remain
+- `CommandSeparator`: hidden while searching unless `alwaysRender`
+- `CommandLoading`: progressbar helper
 
-## Hooks
+### Hooks
 
-### `useCommandStore()`
-
-Returns the underlying `CommandStore`.
-
-### `useCommandSlice(selector)`
-
-Subscribes to derived state from `CommandState`.
+- `useCommandStore()`: returns the underlying store
+- `useCommandSlice(selector)`: subscribes to derived `CommandState`
 
 ```tsx
 function ResultCount() {
@@ -206,15 +139,42 @@ function ResultCount() {
 }
 ```
 
-## Core API
+## Core
+
+```ts
+import { createCommand } from '@unvalley/cmdk-core'
+
+const command = createCommand({
+  filter: 'contains',
+  initialSearch: 'app',
+  onValueChange: (value) => console.log(value),
+})
+
+command.registerItem({ value: 'apple' })
+command.registerItem({ value: 'banana', keywords: ['fruit'] })
+
+command.selectFirst()
+command.triggerSelect()
+```
 
 ### `createCommand(options?)`
 
-Creates a `CommandStore`.
+- `initialValue?: string`
+  Initial highlighted item.
+- `initialSearch?: string`
+  Initial search query.
+- `filter?: 'fuzzy' | 'contains' | 'none' | FilterFn`
+  Built-in filter mode or custom scoring function.
+- `loop?: boolean`
+  Wrap keyboard navigation.
+- `selectOnHover?: boolean`
+  Whether pointer hover updates selection.
+- `onValueChange?: (value: string) => void`
+  Called when highlighted value changes.
+- `onSearchChange?: (search: string) => void`
+  Called when search changes.
 
-```ts
-const command = createCommand({ filterMode: 'contains', loop: true })
-```
+### `CommandStore`
 
 Main methods:
 
@@ -228,18 +188,15 @@ Main methods:
 - `subscribe(listener)`
 - `subscribeSlice(selector, listener, isEqual?)`
 
-`getState()` exposes:
+`updateOptions()` updates `filter`, `loop`, `selectOnHover`, and callbacks after creation.
 
-- `search`
-- `value`
-- `items`
-- `groups`
-- `filteredOrder`
-- `visibleSet`
-- `navigableOrder`
-- `visibleGroups`
-- `isComposing`
-- `pointerSelection`
+### Filtering
+
+- `fuzzy`: default fuzzy scorer
+- `contains`: normalized substring matching, with a slight preference for matches at the start or after a separator
+- `none`: disables internal filtering and sorting
+
+Custom filters return `0` to hide an item and `> 0` to keep it visible. Higher scores sort earlier.
 
 ## Styling
 

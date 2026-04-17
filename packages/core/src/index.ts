@@ -2,14 +2,13 @@ export { normalize } from './normalize'
 export { commandScore } from './score'
 export { createCommand } from './store'
 export type {
-  CommandOptions,
+  CommandFilter,
   CommandState,
   CommandStore,
+  CommandStoreOptions,
   FilterFn,
-  FilterMode,
   GroupData,
   GroupInput,
   ItemData,
   ItemInput,
-  PointerSelectionMode,
 } from './types'

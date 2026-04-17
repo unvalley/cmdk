@@ -30,24 +30,24 @@ describe('createCommand: IME composition', () => {
 
 describe('createCommand: controlled mode', () => {
   it('honors initial value', () => {
-    const cmd = createCommand({ value: 'apple' })
+    const cmd = createCommand({ initialValue: 'apple' })
     cmd.registerItem({ value: 'apple' })
     expect(cmd.getState().value).toBe('apple')
   })
 
   it('honors initial search', () => {
-    const cmd = createCommand({ search: 'foo' })
+    const cmd = createCommand({ initialSearch: 'foo' })
     expect(cmd.getState().search).toBe('foo')
   })
 
   it('updates filter-related options after creation', () => {
-    const cmd = createCommand({ filterMode: 'none' })
+    const cmd = createCommand({ filter: 'none' })
     cmd.registerItem({ value: 'apple' })
     cmd.registerItem({ value: 'banana' })
     cmd.setSearch('app')
     expect(cmd.getState().filteredOrder).toEqual(['apple', 'banana'])
 
-    cmd.updateOptions({ filterMode: 'contains' })
+    cmd.updateOptions({ filter: 'contains' })
     expect(cmd.getState().filteredOrder).toEqual(['apple'])
   })
 
@@ -63,6 +63,14 @@ describe('createCommand: controlled mode', () => {
     cmd.updateOptions({ onValueChange: second })
     cmd.setValue('')
     expect(second).toHaveBeenCalledWith('')
+  })
+
+  it('updates selectOnHover after creation', () => {
+    const cmd = createCommand({ selectOnHover: false })
+    expect(cmd.getState().selectOnHover).toBe(false)
+
+    cmd.updateOptions({ selectOnHover: true })
+    expect(cmd.getState().selectOnHover).toBe(true)
   })
 })
 

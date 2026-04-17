@@ -1,10 +1,19 @@
-import { type CommandOptions, type CommandStore, createCommand } from '@unvalley/cmdk-core'
+import { type CommandFilter, type CommandStore, createCommand } from '@unvalley/cmdk-core'
 import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef } from 'react'
 import { CommandContext } from './context'
 
-export type CommandProps = CommandOptions & {
+export type CommandProps = {
   label?: string
   className?: string
+  value?: string
+  defaultValue?: string
+  search?: string
+  defaultSearch?: string
+  onValueChange?: (value: string) => void
+  onSearchChange?: (search: string) => void
+  filter?: CommandFilter
+  loop?: boolean
+  selectOnHover?: boolean
   children?: ReactNode
 }
 
@@ -12,11 +21,23 @@ export const Command = ({ label, className, children, ...options }: CommandProps
   // Create store once. We pass *initial* options only; controlled props are
   // synced via effects below.
   // biome-ignore lint/correctness/useExhaustiveDependencies: store is intentionally created once
-  const store = useMemo<CommandStore>(() => createCommand(options), [])
+  const store = useMemo<CommandStore>(
+    () =>
+      createCommand({
+        filter: options.filter,
+        initialSearch: options.search ?? options.defaultSearch,
+        initialValue: options.value ?? options.defaultValue,
+        loop: options.loop,
+        onSearchChange: options.onSearchChange,
+        onValueChange: options.onValueChange,
+        selectOnHover: options.selectOnHover,
+      }),
+    [],
+  )
 
   // Sync controlled value
   const valueProp = options.value
-  const lastValue = useRef(valueProp)
+  const lastValue = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (valueProp !== undefined && valueProp !== lastValue.current) {
       lastValue.current = valueProp
@@ -26,7 +47,7 @@ export const Command = ({ label, className, children, ...options }: CommandProps
 
   // Sync controlled search
   const searchProp = options.search
-  const lastSearch = useRef(searchProp)
+  const lastSearch = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (searchProp !== undefined && searchProp !== lastSearch.current) {
       lastSearch.current = searchProp
@@ -37,20 +58,18 @@ export const Command = ({ label, className, children, ...options }: CommandProps
   useEffect(() => {
     store.updateOptions({
       filter: options.filter,
-      filterMode: options.filterMode,
       loop: options.loop,
       onSearchChange: options.onSearchChange,
       onValueChange: options.onValueChange,
-      pointerSelection: options.pointerSelection,
+      selectOnHover: options.selectOnHover,
     })
   }, [
     store,
     options.filter,
-    options.filterMode,
     options.loop,
     options.onSearchChange,
     options.onValueChange,
-    options.pointerSelection,
+    options.selectOnHover,
   ])
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {

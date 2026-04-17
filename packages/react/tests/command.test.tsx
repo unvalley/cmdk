@@ -28,9 +28,9 @@ describe('<Command>', () => {
     expect(container.querySelector('[cmdk-root]')?.getAttribute('aria-label')).toBe('My Menu')
   })
 
-  it('updates filterMode after rerender', () => {
+  it('updates filter after rerender', () => {
     const { rerender } = render(
-      <Command search="app" filterMode="none">
+      <Command search="app" filter="none">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
           <CommandItem value="banana">Banana</CommandItem>
@@ -40,7 +40,7 @@ describe('<Command>', () => {
     expect(screen.getByText('Banana')).toBeInTheDocument()
 
     rerender(
-      <Command search="app" filterMode="contains">
+      <Command search="app" filter="contains">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
           <CommandItem value="banana">Banana</CommandItem>
@@ -126,6 +126,26 @@ describe('<Command.Input>', () => {
     expect(second).toHaveBeenCalledWith('a')
   })
 
+  it('supports defaultSearch for uncontrolled usage', () => {
+    render(
+      <Command defaultSearch="apple">
+        <CommandInput placeholder="Search" />
+      </Command>,
+    )
+
+    expect(screen.getByPlaceholderText('Search')).toHaveValue('apple')
+  })
+
+  it('prefers search over defaultSearch', () => {
+    render(
+      <Command search="banana" defaultSearch="apple">
+        <CommandInput placeholder="Search" />
+      </Command>,
+    )
+
+    expect(screen.getByPlaceholderText('Search')).toHaveValue('banana')
+  })
+
   it('uses the latest onValueChange after rerender', async () => {
     const first = vi.fn()
     const second = vi.fn()
@@ -151,6 +171,36 @@ describe('<Command.Input>', () => {
     fireEvent.keyDown(input, { key: 'ArrowDown' })
     expect(first).not.toHaveBeenCalled()
     expect(second).toHaveBeenCalledWith('apple')
+  })
+
+  it('supports defaultValue for uncontrolled usage', () => {
+    render(
+      <Command defaultValue="apple">
+        <CommandList>
+          <CommandItem value="apple">Apple</CommandItem>
+          <CommandItem value="banana">Banana</CommandItem>
+        </CommandList>
+      </Command>,
+    )
+
+    expect(screen.getByText('Apple').closest('[cmdk-item]')?.getAttribute('data-selected')).toBe(
+      'true',
+    )
+  })
+
+  it('prefers value over defaultValue', () => {
+    render(
+      <Command value="banana" defaultValue="apple">
+        <CommandList>
+          <CommandItem value="apple">Apple</CommandItem>
+          <CommandItem value="banana">Banana</CommandItem>
+        </CommandList>
+      </Command>,
+    )
+
+    expect(screen.getByText('Banana').closest('[cmdk-item]')?.getAttribute('data-selected')).toBe(
+      'true',
+    )
   })
 })
 

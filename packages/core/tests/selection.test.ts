@@ -82,7 +82,7 @@ describe('createCommand: selection', () => {
   it('onValueChange not called if value unchanged', () => {
     const calls: string[] = []
     const cmd = createCommand({
-      value: 'a',
+      initialValue: 'a',
       onValueChange: (v) => calls.push(v),
     })
     cmd.registerItem({ value: 'a' })

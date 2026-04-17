@@ -93,7 +93,7 @@ describe('<Command.Item>', () => {
     ).not.toThrow()
   })
 
-  it('pointerSelection="hover" updates value on pointer move (default)', () => {
+  it('selectOnHover updates value on pointer move by default', () => {
     render(
       <Command>
         <CommandItem value="a">A</CommandItem>
@@ -104,9 +104,9 @@ describe('<Command.Item>', () => {
     expect(screen.getByText('B').closest('[cmdk-item]')?.getAttribute('data-selected')).toBe('true')
   })
 
-  it('pointerSelection="click" does NOT update value on pointer move (#49)', () => {
+  it('selectOnHover={false} does not update value on pointer move (#49)', () => {
     render(
-      <Command pointerSelection="click">
+      <Command selectOnHover={false}>
         <CommandItem value="a">A</CommandItem>
         <CommandItem value="b">B</CommandItem>
       </Command>,
@@ -117,9 +117,9 @@ describe('<Command.Item>', () => {
     )
   })
 
-  it('updates pointerSelection after rerender', () => {
+  it('updates selectOnHover after rerender', () => {
     const { rerender } = render(
-      <Command pointerSelection="click">
+      <Command selectOnHover={false}>
         <CommandItem value="a">A</CommandItem>
         <CommandItem value="b">B</CommandItem>
       </Command>,
@@ -131,7 +131,7 @@ describe('<Command.Item>', () => {
     )
 
     rerender(
-      <Command pointerSelection="hover">
+      <Command selectOnHover>
         <CommandItem value="a">A</CommandItem>
         <CommandItem value="b">B</CommandItem>
       </Command>,
