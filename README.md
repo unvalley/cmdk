@@ -4,7 +4,7 @@ Command menu primitives with framework-specific adapters.
 
 ## Packages
 
-- [`@unvalley/cmdk-react`](./packages/react/README.md)
+- [`@command-palette/react`](./packages/react/README.md)
   Unstyled React components for building command menus.
 - [`@unvalley/cmdk-core`](./packages/core/README.md)
   Internal store and filtering engine used by adapters.
@@ -12,7 +12,7 @@ Command menu primitives with framework-specific adapters.
 ## Install
 
 ```bash
-pnpm add @unvalley/cmdk-react react react-dom
+pnpm add @command-palette/react react react-dom
 ```
 
 ## Docs

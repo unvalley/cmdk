@@ -1,4 +1,4 @@
-# @unvalley/cmdk-react
+# @command-palette/react
 
 Unstyled React primitives for building command menus.
 
@@ -7,7 +7,7 @@ Built on top of `@unvalley/cmdk-core`.
 ## Install
 
 ```bash
-pnpm add @unvalley/cmdk-react react react-dom
+pnpm add @command-palette/react react react-dom
 ```
 
 ## Usage
@@ -20,7 +20,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@unvalley/cmdk-react'
+} from '@command-palette/react'
 
 export function CommandMenu() {
   return (

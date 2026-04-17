@@ -6,7 +6,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@unvalley/cmdk-react'
+} from '@command-palette/react'
 import { useEffect, useState } from 'react'
 
 type Action = {
@@ -60,7 +60,7 @@ export const App = () => {
       <header>
         <h1>cmdk demo</h1>
         <p>
-          Framework-agnostic command menu — <code>@unvalley/cmdk-react</code>
+          Framework-agnostic command menu — <code>@command-palette/react</code>
         </p>
       </header>
 
@@ -80,7 +80,6 @@ export const App = () => {
         ) : (
           <ul className="log">
             {log.map((line) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: log entries embed their own timestamp making them effectively unique
               <li key={line}>{line}</li>
             ))}
           </ul>

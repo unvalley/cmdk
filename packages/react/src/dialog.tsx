@@ -105,7 +105,6 @@ export const CommandDialog = ({
   }
 
   return (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click close is a pointer-only affordance; ESC handles keyboard dismiss
     <dialog
       ref={dialogRef}
       cmdk-dialog=""

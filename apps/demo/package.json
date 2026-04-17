@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@unvalley/cmdk-react": "workspace:*",
+    "@command-palette/react": "workspace:*",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

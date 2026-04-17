@@ -1,9 +1,16 @@
 {
-  "name": "@unvalley/cmdk-react",
+  "name": "@command-palette/react",
   "version": "0.0.1",
   "description": "Unstyled React command menu primitives",
   "type": "module",
   "sideEffects": false,
+  "keywords": [
+    "command-menu",
+    "command-palette",
+    "cmdk",
+    "react",
+    "ui"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -16,6 +23,14 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unvalley/cmdk.git"
+  },
+  "homepage": "https://github.com/unvalley/cmdk/tree/main/packages/react#readme",
+  "bugs": {
+    "url": "https://github.com/unvalley/cmdk/issues"
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest run",

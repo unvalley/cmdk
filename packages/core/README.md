@@ -2,7 +2,7 @@
 
 Framework-agnostic command menu store.
 
-This package is the internal foundation for framework adapters such as `@unvalley/cmdk-react`.
+This package is the internal foundation for framework adapters such as `@command-palette/react`.
 
 ## Usage
 
