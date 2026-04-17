@@ -66,7 +66,8 @@ export function createCommand(options: CommandOptions = {}): CommandStore {
 
     // Auto-correct selection if current value is no longer visible.
     // Skip during initialization (before items are registered) to respect options.value.
-    if (initialized && !visibleSet.has(value)) {
+    // Skip when value is '' (intentional "no selection" state).
+    if (initialized && value !== '' && !visibleSet.has(value)) {
       const next = filteredOrder[0] ?? ''
       if (next !== value) {
         value = next

@@ -3,7 +3,7 @@ import {
   type CommandStore,
   createCommand,
 } from '@unvalley/cmdk-core'
-import { type ReactNode, useEffect, useMemo, useRef } from 'react'
+import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef } from 'react'
 import { CommandContext } from './context'
 
 export interface CommandProps extends CommandOptions {
@@ -42,9 +42,40 @@ export function Command({
     }
   }, [store, searchProp])
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
+    if (store.getState().isComposing) return
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        store.selectNext()
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        store.selectPrev()
+        break
+      case 'Home':
+        e.preventDefault()
+        store.selectFirst()
+        break
+      case 'End':
+        e.preventDefault()
+        store.selectLast()
+        break
+      case 'Enter':
+        e.preventDefault()
+        store.triggerSelect(e.nativeEvent)
+        break
+    }
+  }
+
   return (
     <CommandContext.Provider value={store}>
-      <div cmdk-root="" aria-label={label} className={className}>
+      <div
+        cmdk-root=""
+        aria-label={label}
+        className={className}
+        onKeyDown={handleKeyDown}
+      >
         {children}
       </div>
     </CommandContext.Provider>
