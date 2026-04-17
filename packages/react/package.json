@@ -1,7 +1,7 @@
 {
   "name": "@unvalley/cmdk-react",
   "version": "0.0.1",
-  "description": "React adapter for @unvalley/cmdk-core",
+  "description": "Unstyled React command menu primitives",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -25,10 +25,8 @@
   "peerDependencies": {
     "react": "^19.0.0"
   },
-  "dependencies": {
-    "@unvalley/cmdk-core": "workspace:*"
-  },
   "devDependencies": {
+    "@unvalley/cmdk-core": "workspace:*",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
