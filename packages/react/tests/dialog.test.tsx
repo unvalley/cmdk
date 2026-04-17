@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
+import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { CommandDialog } from '../src/dialog'
 import { CommandInput } from '../src/input'
@@ -75,6 +76,64 @@ describe('<CommandDialog>', () => {
     const input = screen.getByPlaceholderText('Search')
     fireEvent.keyDown(input, { key: 'Escape' })
     expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it('clears the search input when the dialog closes', async () => {
+    const Wrapper = () => {
+      const [open, setOpen] = useState(true)
+      return (
+        <>
+          <button type="button" onClick={() => setOpen(true)}>
+            open
+          </button>
+          <CommandDialog open={open} onOpenChange={setOpen} label="menu">
+            <CommandInput placeholder="Search" />
+          </CommandDialog>
+        </>
+      )
+    }
+    render(<Wrapper />)
+    const input = screen.getByPlaceholderText('Search') as HTMLInputElement
+    fireEvent.change(input, { target: { value: 'hello' } })
+    expect(input.value).toBe('hello')
+    // Close with Escape
+    fireEvent.keyDown(input, { key: 'Escape' })
+    await act(async () => {})
+    // Reopen — the input should be cleared
+    fireEvent.click(screen.getByText('open'))
+    await act(async () => {})
+    expect((screen.getByPlaceholderText('Search') as HTMLInputElement).value).toBe('')
+  })
+
+  it('does not clear search on close when search is controlled', async () => {
+    const Wrapper = () => {
+      const [open, setOpen] = useState(true)
+      const [search, setSearch] = useState('hello')
+      return (
+        <>
+          <button type="button" onClick={() => setOpen(true)}>
+            open
+          </button>
+          <CommandDialog
+            open={open}
+            onOpenChange={setOpen}
+            search={search}
+            onSearchChange={setSearch}
+            label="menu"
+          >
+            <CommandInput placeholder="Search" />
+          </CommandDialog>
+        </>
+      )
+    }
+    render(<Wrapper />)
+    const input = screen.getByPlaceholderText('Search') as HTMLInputElement
+    fireEvent.keyDown(input, { key: 'Escape' })
+    await act(async () => {})
+    fireEvent.click(screen.getByText('open'))
+    await act(async () => {})
+    // Consumer kept "hello" in its state — library must not have touched it.
+    expect((screen.getByPlaceholderText('Search') as HTMLInputElement).value).toBe('hello')
   })
 
   it('does not close on Escape during IME composition', () => {

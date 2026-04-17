@@ -5,6 +5,7 @@ import {
   type Ref,
   useEffect,
   useRef,
+  useState,
 } from 'react'
 import { Command, type CommandProps } from './command'
 
@@ -14,6 +15,11 @@ export type CommandDialogProps = CommandProps & {
   onOpenChange: (open: boolean) => void
   /** Class applied to the native `<dialog>` element. */
   dialogClassName?: string
+  /**
+   * Clear the search input when the dialog closes. Default true. Has no
+   * effect when `search` is controlled by the consumer.
+   */
+  resetSearchOnClose?: boolean
   children?: ReactNode
 }
 
@@ -30,10 +36,23 @@ export const CommandDialog = ({
   open,
   onOpenChange,
   dialogClassName,
+  resetSearchOnClose = true,
   children,
+  // Pull search control out so we can manage the reset-on-close behavior
+  // without disturbing a consumer that wants full control.
+  search: searchProp,
+  onSearchChange,
   ...commandProps
 }: CommandDialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const isSearchControlled = searchProp !== undefined
+  const [internalSearch, setInternalSearch] = useState('')
+  const search = isSearchControlled ? searchProp : internalSearch
+
+  const handleSearchChange = (next: string) => {
+    if (!isSearchControlled) setInternalSearch(next)
+    onSearchChange?.(next)
+  }
 
   // Forward ref to the dialog element.
   useEffect(() => {
@@ -49,6 +68,14 @@ export const CommandDialog = ({
     if (open && !el.open) el.showModal()
     else if (!open && el.open) el.close()
   }, [open])
+
+  // Clear the search when the dialog closes, so the next open starts fresh.
+  // Only applies when search is uncontrolled.
+  useEffect(() => {
+    if (!open && resetSearchOnClose && !isSearchControlled) {
+      setInternalSearch('')
+    }
+  }, [open, resetSearchOnClose, isSearchControlled])
 
   // The native dialog fires a `close` event when the user presses ESC
   // or the element's `close()` is called. Mirror that back to the parent.
@@ -67,8 +94,8 @@ export const CommandDialog = ({
   }
 
   // Native <dialog> should close on ESC via the `cancel` event, but some
-  // browsers (notably Safari) let the inner <input> swallow the ESC keydown
-  // before the dialog can react. Intercept it explicitly.
+  // browsers let the inner <input> swallow the ESC keydown before the
+  // dialog can react. Intercept it explicitly.
   const handleKeyDown = (e: KeyboardEvent<HTMLDialogElement>) => {
     if (e.key !== 'Escape') return
     // Allow consumers to pre-empt (and respect IME composition).
@@ -86,7 +113,9 @@ export const CommandDialog = ({
       onClick={handleClick}
       onKeyDown={handleKeyDown}
     >
-      <Command {...commandProps}>{children}</Command>
+      <Command search={search} onSearchChange={handleSearchChange} {...commandProps}>
+        {children}
+      </Command>
     </dialog>
   )
 }
