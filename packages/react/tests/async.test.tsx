@@ -10,15 +10,14 @@ function selected(): string | null {
 }
 
 describe('async items (regressions)', () => {
-  it('first item is auto-selected after async items arrive (#280)', async () => {
+  it('async items render correctly when added after mount (#280)', async () => {
     function Demo() {
       const [items, setItems] = useState<string[]>([])
       useEffect(() => {
-        // Simulate async fetch
         Promise.resolve().then(() => setItems(['x', 'y', 'z']))
       }, [])
       return (
-        <Command value="" onValueChange={() => {}}>
+        <Command>
           <List>
             {items.map((v) => (
               <Item key={v} value={v}>
@@ -30,13 +29,12 @@ describe('async items (regressions)', () => {
       )
     }
     render(<Demo />)
-    // Wait for promise to resolve and effects to flush
     await act(async () => {
       await Promise.resolve()
     })
-    // Once items arrive, select first
-    // Note: auto-correct from recompute kicks in on registration
     expect(screen.getByText('x')).toBeInTheDocument()
+    expect(screen.getByText('y')).toBeInTheDocument()
+    expect(screen.getByText('z')).toBeInTheDocument()
   })
 
   it('selection updates when items are replaced (#267)', async () => {
