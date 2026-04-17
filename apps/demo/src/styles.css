@@ -117,17 +117,8 @@ kbd {
 
 [cmdk-root] {
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
   overflow: hidden;
-  max-width: 560px;
   width: 100%;
-}
-
-.inline-wrap [cmdk-root] {
-  min-height: 320px;
-  display: flex;
-  flex-direction: column;
 }
 
 [cmdk-input] {
@@ -149,10 +140,6 @@ kbd {
   max-height: 400px;
   overflow-y: auto;
   padding: 4px;
-}
-
-.inline-wrap [cmdk-list] {
-  flex: 1;
 }
 
 [cmdk-group] {

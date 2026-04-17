@@ -1,5 +1,4 @@
 import {
-  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -18,9 +17,10 @@ type Action = {
 }
 
 const NAVIGATION: readonly Action[] = [
-  { value: 'go-home', label: 'Go to Home', hint: 'G then H' },
-  { value: 'go-projects', label: 'Go to Projects', hint: 'G then P' },
-  { value: 'go-settings', label: 'Go to Settings', hint: 'G then S', keywords: ['prefs'] },
+  { value: 'go-home', label: 'Go to Home', hint: 'G H' },
+  { value: 'go-projects', label: 'Go to Projects', hint: 'G P' },
+  { value: 'go-issues', label: 'Go to Issues', hint: 'G I', keywords: ['bugs', 'tasks'] },
+  { value: 'go-settings', label: 'Go to Settings', hint: 'G S', keywords: ['prefs'] },
 ]
 
 const ACTIONS: readonly Action[] = [
@@ -30,10 +30,9 @@ const ACTIONS: readonly Action[] = [
   { value: 'delete', label: 'Delete', keywords: ['remove', 'trash'] },
 ]
 
-const THEME: readonly Action[] = [
-  { value: 'theme-light', label: 'Light', keywords: ['white'] },
-  { value: 'theme-dark', label: 'Dark', keywords: ['black', 'night'] },
-  { value: 'theme-system', label: 'System', keywords: ['auto'] },
+const ACCOUNT: readonly Action[] = [
+  { value: 'profile', label: 'View profile', keywords: ['me', 'account'] },
+  { value: 'sign-out', label: 'Sign out', keywords: ['logout', 'exit'] },
 ]
 
 export const App = () => {
@@ -75,39 +74,9 @@ export const App = () => {
       </section>
 
       <section>
-        <h2>Inline</h2>
-        <p className="muted">Embedded directly on the page — no dialog.</p>
-        <div className="inline-wrap">
-          <Command label="Inline command menu" loop>
-            <CommandInput placeholder="Type to filter…" />
-            <CommandList>
-              <CommandEmpty>No results.</CommandEmpty>
-              <CommandGroup heading="Navigation">
-                {NAVIGATION.map((a) => (
-                  <CommandItem key={a.value} value={a.value} keywords={a.keywords} onSelect={run}>
-                    <span>{a.label}</span>
-                    {a.hint && <span className="hint-mono">{a.hint}</span>}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandSeparator />
-              <CommandGroup heading="Actions">
-                {ACTIONS.map((a) => (
-                  <CommandItem key={a.value} value={a.value} keywords={a.keywords} onSelect={run}>
-                    <span>{a.label}</span>
-                    {a.hint && <span className="hint-mono">{a.hint}</span>}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </div>
-      </section>
-
-      <section>
         <h2>Recent activity</h2>
         {log.length === 0 ? (
-          <p className="muted">Select something — activity will appear here.</p>
+          <p className="muted">Select a command — activity will appear here.</p>
         ) : (
           <ul className="log">
             {log.map((line, i) => (
@@ -139,8 +108,8 @@ export const App = () => {
             ))}
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Theme">
-            {THEME.map((a) => (
+          <CommandGroup heading="Account">
+            {ACCOUNT.map((a) => (
               <CommandItem key={a.value} value={a.value} keywords={a.keywords} onSelect={run}>
                 {a.label}
               </CommandItem>
