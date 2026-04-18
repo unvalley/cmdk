@@ -38,5 +38,5 @@ jobs:
       - name: Build packages
         run: pnpm build
 
-      - name: Build demo
-        run: pnpm --filter demo build
+      - name: Build demos
+        run: pnpm -r --filter='./demo/*' run build
