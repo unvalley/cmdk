@@ -15,6 +15,7 @@ describe("normalize", () => {
   it("normalizes whitespace variants to space", () => {
     expect(normalize("foo\tbar")).toBe("foo bar")
     expect(normalize("foo-bar")).toBe("foo bar")
+    expect(normalize("foo_bar")).toBe("foo bar")
     expect(normalize("foo\nbar")).toBe("foo bar")
   })
 

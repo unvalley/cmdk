@@ -1,9 +1,9 @@
-const SPACE_LIKE = /[\s-]/g
+const SPACE_LIKE = /[\s_-]/g
 
 /**
  * Lowercase, strip Unicode diacritics, collapse space-like chars to a single space.
- * Used by the default scorer so that `cafe` matches `café` (#386) and
- * `foo-bar` matches `foo bar`.
+ * Used by the default scorer so that `cafe` matches `café` and `foo-bar` / `foo_bar`
+ * match `foo bar`.
  */
 export const normalize = (input: string): string =>
   input
