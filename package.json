@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "check": "biome check && pnpm typecheck && pnpm test && pnpm build && pnpm -r --filter='./demo/*' run build",
+    "check": "biome check && pnpm typecheck && pnpm test && pnpm build && pnpm check:size && pnpm -r --filter='./demo/*' run build",
     "build": "pnpm -r --filter='./packages/*' run build",
     "test": "pnpm -r --filter='./packages/*' run test",
     "typecheck": "pnpm -r --filter='./packages/*' run typecheck",
+    "check:size": "node scripts/check-package-size.mts",
     "check:write": "biome check --write"
   },
   "devDependencies": {
