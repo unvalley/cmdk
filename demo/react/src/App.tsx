@@ -86,7 +86,7 @@ export const App = () => {
         )}
       </section>
 
-      <CommandDialog open={open} onOpenChange={setOpen} label="Global command menu" loop>
+      <CommandDialog open={open} onOpenChange={setOpen} label="Global Command Palette" loop>
         <CommandInput placeholder="What do you want to do?" />
         <CommandList>
           <CommandEmpty>No matching command.</CommandEmpty>

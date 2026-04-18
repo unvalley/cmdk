@@ -94,7 +94,7 @@ const run = (value: string): void => {
       </ul>
     </section>
 
-    <CommandDialog v-model:open="open" label="Global command menu" loop>
+    <CommandDialog v-model:open="open" label="Global Command Palette" loop>
       <CommandInput placeholder="What do you want to do?" />
       <CommandList>
         <CommandEmpty>No matching command.</CommandEmpty>

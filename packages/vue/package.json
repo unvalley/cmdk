@@ -1,12 +1,12 @@
 {
   "name": "@command-palette/vue",
   "version": "0.0.1",
-  "description": "Unstyled Vue command menu primitives",
+  "description": "Unstyled Vue command palette primitives",
   "type": "module",
   "sideEffects": false,
   "keywords": [
-    "command-menu",
     "command-palette",
+    "command-menu",
     "vue",
     "ui"
   ],

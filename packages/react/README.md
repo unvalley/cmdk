@@ -4,12 +4,6 @@ Unstyled React primitives for building command menus.
 
 Built on top of the internal command store.
 
-## Install
-
-```bash
-pnpm add @command-palette/react react react-dom
-```
-
 ## Usage
 
 ```tsx
@@ -22,9 +16,9 @@ import {
   CommandList,
 } from '@command-palette/react'
 
-export function CommandMenu() {
+export function CommandPalette() {
   return (
-    <Command label="Command Menu">
+    <Command label="Command Palette">
       <CommandInput placeholder="Search…" />
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
@@ -44,7 +38,7 @@ export function CommandMenu() {
 For modal usage:
 
 ```tsx
-<CommandDialog open={open} onOpenChange={setOpen} label="Global Command Menu">
+<CommandDialog open={open} onOpenChange={setOpen} label="Global Command Palette">
   <CommandInput placeholder="Type a command…" />
   <CommandList>
     <CommandItem value="theme">Change theme</CommandItem>

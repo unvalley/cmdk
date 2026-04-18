@@ -4,12 +4,6 @@ Unstyled Vue primitives for building command menus.
 
 Built on top of the internal command store.
 
-## Install
-
-```bash
-pnpm add @command-palette/vue vue
-```
-
 ## Usage
 
 ```vue
@@ -25,7 +19,7 @@ import {
 </script>
 
 <template>
-  <Command label="Command Menu">
+  <Command label="Command Palette">
     <CommandInput placeholder="Search…" />
     <CommandList>
       <CommandEmpty>No results.</CommandEmpty>
@@ -55,7 +49,7 @@ const open = ref(false)
 </script>
 
 <template>
-  <CommandDialog v-model:open="open" label="Global Command Menu">
+  <CommandDialog v-model:open="open" label="Global Command Palette">
     <CommandInput placeholder="Type a command…" />
     <CommandList>
       <CommandItem value="theme">Change theme</CommandItem>

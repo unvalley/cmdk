@@ -1,12 +1,12 @@
 {
   "name": "@command-palette/react",
   "version": "0.0.1",
-  "description": "Unstyled React command menu primitives",
+  "description": "Unstyled React command palette primitives",
   "type": "module",
   "sideEffects": false,
   "keywords": [
-    "command-menu",
     "command-palette",
+    "command-menu",
     "react",
     "ui"
   ],
