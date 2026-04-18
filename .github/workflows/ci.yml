@@ -26,17 +26,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Test
-        run: pnpm test
-
-      - name: Build packages
-        run: pnpm build
-
-      - name: Build demos
-        run: pnpm -r --filter='./demo/*' run build
+      - name: Check
+        run: pnpm check
