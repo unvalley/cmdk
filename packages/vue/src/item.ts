@@ -33,14 +33,29 @@ export const commandItemProps: CommandItemPropsOptions = {
   groupId: String,
 }
 
+/**
+ * Props for a selectable command option.
+ */
 export type CommandItemProps = {
+  /**
+   * Stable identity for this item.
+   *
+   * Used for registration, filtering, selection, and emitted events, so it
+   * should be unique within the command palette and remain stable across
+   * renders.
+   */
   value: string
+  /** Extra search terms that should match this item. */
   keywords?: readonly string[]
+  /** Prevents pointer and keyboard selection for this item. */
   disabled?: boolean
+  /** Keep the item mounted even when it does not currently match the search. */
   forceMount?: boolean
+  /** Explicit group id. Defaults to the nearest `CommandGroup` when omitted. */
   groupId?: string
 }
 
+/** Registers and renders a single selectable option inside the command list. */
 export const CommandItem: DefineComponent<CommandItemProps> = defineComponent({
   name: "CommandItem",
   inheritAttrs: false,

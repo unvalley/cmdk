@@ -1,11 +1,4 @@
-import {
-  type DefineComponent,
-  defineComponent,
-  type ExtractPublicPropTypes,
-  h,
-  mergeProps,
-  type VNode,
-} from "vue"
+import { type DefineComponent, defineComponent, h, mergeProps, type VNode } from "vue"
 
 type CommandLoadingPropsOptions = {
   progress: NumberConstructor
@@ -15,8 +8,15 @@ export const commandLoadingProps: CommandLoadingPropsOptions = {
   progress: Number,
 }
 
-export type CommandLoadingProps = ExtractPublicPropTypes<typeof commandLoadingProps>
+/**
+ * Props for the loading indicator shown inside the command palette.
+ */
+export type CommandLoadingProps = {
+  /** 0..1 progress value surfaced as `aria-valuenow` when set. */
+  progress?: number
+}
 
+/** Renders a progressbar-compatible loading region. */
 export const CommandLoading: DefineComponent<CommandLoadingProps> = defineComponent({
   name: "CommandLoading",
   inheritAttrs: false,

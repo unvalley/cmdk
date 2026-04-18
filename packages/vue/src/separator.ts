@@ -1,11 +1,4 @@
-import {
-  type DefineComponent,
-  defineComponent,
-  type ExtractPublicPropTypes,
-  h,
-  mergeProps,
-  type VNode,
-} from "vue"
+import { type DefineComponent, defineComponent, h, mergeProps, type VNode } from "vue"
 import { useCommandSlice } from "./context"
 
 type CommandSeparatorPropsOptions = {
@@ -16,8 +9,15 @@ export const commandSeparatorProps: CommandSeparatorPropsOptions = {
   alwaysRender: Boolean,
 }
 
-export type CommandSeparatorProps = ExtractPublicPropTypes<typeof commandSeparatorProps>
+/**
+ * Props for a visual divider between sections of command results.
+ */
+export type CommandSeparatorProps = {
+  /** Keep the separator visible even while a search query is active. */
+  alwaysRender?: boolean
+}
 
+/** Renders a separator, hiding it during search unless `alwaysRender` is set. */
 export const CommandSeparator: DefineComponent<CommandSeparatorProps> = defineComponent({
   name: "CommandSeparator",
   inheritAttrs: false,

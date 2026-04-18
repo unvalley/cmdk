@@ -14,10 +14,18 @@ import {
 import { CommandIdAllocatorKey, CommandStoreKey, CommandVersionKey } from "./context"
 import { commandProps, type CommandProps as SharedCommandProps } from "./shared"
 
+/**
+ * Props for the root Vue command palette container.
+ */
 export type CommandProps = SharedCommandProps & {
+  /** Custom item filtering implementation. */
   filter?: CommandFilter
 }
 
+/**
+ * Provides command palette state to descendant Vue primitives and wires up the
+ * keyboard interactions used to move and activate items.
+ */
 export const Command: DefineComponent<CommandProps> = defineComponent({
   name: "Command",
   inheritAttrs: false,

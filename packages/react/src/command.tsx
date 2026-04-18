@@ -2,21 +2,43 @@ import { type CommandFilter, type CommandStore, createCommand } from "@command-p
 import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef } from "react"
 import { CommandContext } from "./context"
 
+/**
+ * Props for the root command palette container.
+ *
+ * This component owns the command store, keyboard navigation, and the shared
+ * selection/search state consumed by the rest of the primitives.
+ */
 export type CommandProps = {
+  /** Accessible name announced for the root `role="application"` container. */
   label?: string
+  /** Class name applied to the root element. */
   className?: string
+  /** Controlled selected item value. */
   value?: string
+  /** Initial selected item value when `value` is uncontrolled. */
   defaultValue?: string
+  /** Controlled search query. */
   search?: string
+  /** Initial search query when `search` is uncontrolled. */
   defaultSearch?: string
+  /** Called when the selected item value changes. */
   onValueChange?: (value: string) => void
+  /** Called when the search query changes. */
   onSearchChange?: (search: string) => void
+  /** Custom item filtering implementation. */
   filter?: CommandFilter
+  /** Wrap keyboard navigation from last item to first, and vice versa. */
   loop?: boolean
+  /** Move selection as the pointer hovers items. */
   selectOnHover?: boolean
+  /** Command palette content such as input, list, groups, and items. */
   children?: ReactNode
 }
 
+/**
+ * Provides command palette state to all descendant primitives and wires up the
+ * keyboard interactions used to move and activate items.
+ */
 export const Command = ({ label, className, children, ...options }: CommandProps): ReactNode => {
   // Create store once. We pass *initial* options only; controlled props are
   // synced via effects below.

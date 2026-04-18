@@ -1,13 +1,23 @@
 import { type HTMLAttributes, type JSX, type ReactNode, type Ref, useEffect, useId } from "react"
 import { GroupContext, useCommandSlice, useCommandStore } from "./context"
 
+/**
+ * Props for grouping related command items under an optional heading.
+ *
+ * Additional HTML attributes are forwarded to the outer group container.
+ */
 export type CommandGroupProps = HTMLAttributes<HTMLDivElement> & {
+  /** Ref forwarded to the outer group container. */
   ref?: Ref<HTMLDivElement>
+  /** Label rendered above the group items and linked via `aria-labelledby`. */
   heading?: ReactNode
+  /** Keep the group mounted even when no items inside currently match. */
   forceMount?: boolean
+  /** Group heading and items content. */
   children?: ReactNode
 }
 
+/** Renders a labelled collection of related command items. */
 export const CommandGroup = ({
   ref,
   heading,

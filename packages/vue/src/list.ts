@@ -1,5 +1,6 @@
 import { type DefineComponent, defineComponent, h, mergeProps, type VNode } from "vue"
 
+/** Renders the `listbox` container that owns visible command items. */
 export const CommandList: DefineComponent = defineComponent({
   name: "CommandList",
   inheritAttrs: false,

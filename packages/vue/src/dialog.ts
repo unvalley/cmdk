@@ -14,13 +14,30 @@ import {
 import { Command } from "./command"
 import { commandProps, type CommandProps as SharedCommandProps } from "./shared"
 
+/**
+ * Props for the dialog-backed Vue command palette.
+ *
+ * Includes the shared command props and adds native `<dialog>` visibility
+ * control.
+ */
 export type CommandDialogProps = SharedCommandProps & {
+  /** Custom item filtering implementation. */
   filter?: CommandFilter
+  /** Controls whether the dialog is shown with `showModal()`. */
   open: boolean
+  /** Class applied to the native `<dialog>` element. */
   dialogClass?: string
+  /**
+   * Clear the search query when the dialog closes so the next open starts
+   * fresh. Has no effect when `search` is controlled by the consumer.
+   */
   resetSearchOnClose?: boolean
 }
 
+/**
+ * Wraps `Command` in a native `<dialog>` element and syncs its open state with
+ * Vue props and events.
+ */
 export const CommandDialog: DefineComponent<CommandDialogProps> = defineComponent({
   name: "CommandDialog",
   inheritAttrs: false,

@@ -1,5 +1,5 @@
 import type { CommandFilter } from "@command-palette/core"
-import type { ExtractPublicPropTypes, PropType } from "vue"
+import type { PropType } from "vue"
 
 type CommandPropsOptions = {
   label: StringConstructor
@@ -29,4 +29,24 @@ export const commandProps: CommandPropsOptions = {
   },
 } as const
 
-export type CommandProps = ExtractPublicPropTypes<typeof commandProps>
+/**
+ * Shared public props used by the root Vue command palette primitives.
+ */
+export type CommandProps = {
+  /** Accessible name announced for the root `role="application"` container. */
+  label?: string
+  /** Controlled selected item value used with `v-model`. */
+  modelValue?: string
+  /** Initial selected item value when `modelValue` is uncontrolled. */
+  defaultValue?: string
+  /** Controlled search query. */
+  search?: string
+  /** Initial search query when `search` is uncontrolled. */
+  defaultSearch?: string
+  /** Custom item filtering implementation. */
+  filter?: CommandFilter
+  /** Wrap keyboard navigation from last item to first, and vice versa. */
+  loop?: boolean
+  /** Move selection as the pointer hovers items. */
+  selectOnHover?: boolean
+}

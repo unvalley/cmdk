@@ -1,10 +1,17 @@
 import { type ChangeEvent, type CompositionEvent, type JSX, type Ref, useRef } from "react"
 import { useCommandSlice, useCommandStore } from "./context"
 
+/**
+ * Props for the search input.
+ *
+ * Native input attributes are forwarded, except `value` and `onChange`, which
+ * are driven through the command palette store.
+ */
 export type CommandInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   "value" | "onChange"
 > & {
+  /** Ref forwarded to the underlying `<input>`. */
   ref?: Ref<HTMLInputElement>
   /** Override the displayed value. If omitted, the store's search is used. */
   value?: string
@@ -12,6 +19,7 @@ export type CommandInputProps = Omit<
   onValueChange?: (value: string) => void
 }
 
+/** Binds a text input to the command palette search state. */
 export const CommandInput = ({
   ref,
   value,

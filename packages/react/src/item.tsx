@@ -11,17 +11,36 @@ import {
 } from "react"
 import { GroupContext, useCommandSlice, useCommandStore } from "./context"
 
+/**
+ * Props for a selectable command option.
+ *
+ * Additional HTML attributes are forwarded to the rendered option element.
+ */
 export type CommandItemProps = Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> & {
+  /** Ref forwarded to the rendered option element. */
   ref?: Ref<HTMLDivElement>
+  /**
+   * Stable identity for this item.
+   *
+   * Used for registration, filtering, selection, and `onSelect`, so it should
+   * be unique within the command palette and remain stable across renders.
+   */
   value: string
+  /** Extra search terms that should match this item. */
   keywords?: readonly string[]
+  /** Prevents pointer and keyboard selection for this item. */
   disabled?: boolean
+  /** Keep the item mounted even when it does not currently match the search. */
   forceMount?: boolean
+  /** Explicit group id. Defaults to the nearest `CommandGroup` when omitted. */
   groupId?: string
+  /** Called when the item is activated. */
   onSelect?: (value: string, event?: Event) => void
+  /** Visible item content. */
   children?: ReactNode
 }
 
+/** Registers and renders a single selectable option inside the command list. */
 export const CommandItem = ({
   ref,
   value,

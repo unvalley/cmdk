@@ -1,6 +1,7 @@
 import { type DefineComponent, defineComponent, h, mergeProps, type VNode } from "vue"
 import { useCommandSlice } from "./context"
 
+/** Conditionally renders its slot when the filtered item list is empty. */
 export const CommandEmpty: DefineComponent = defineComponent({
   name: "CommandEmpty",
   inheritAttrs: false,

@@ -9,10 +9,15 @@ export const commandInputProps: CommandInputPropsOptions = {
   modelValue: String,
 }
 
+/**
+ * Props for the search input bound to the command palette store.
+ */
 export type CommandInputProps = {
+  /** Controlled search query used with `v-model`. */
   modelValue?: string
 }
 
+/** Binds an `<input>` element to the command palette search state. */
 export const CommandInput: DefineComponent<CommandInputProps> = defineComponent({
   name: "CommandInput",
   inheritAttrs: false,

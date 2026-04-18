@@ -19,11 +19,17 @@ export const commandGroupProps: CommandGroupPropsOptions = {
   forceMount: Boolean,
 }
 
+/**
+ * Props for grouping related command items under an optional heading.
+ */
 export type CommandGroupProps = {
+  /** Text heading rendered above the group items. */
   heading?: string
+  /** Keep the group mounted even when no items inside currently match. */
   forceMount?: boolean
 }
 
+/** Renders a labelled collection of related command items. */
 export const CommandGroup: DefineComponent<CommandGroupProps> = defineComponent({
   name: "CommandGroup",
   inheritAttrs: false,

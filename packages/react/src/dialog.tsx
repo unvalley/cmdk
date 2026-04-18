@@ -10,9 +10,18 @@ import {
 } from "react"
 import { Command, type CommandProps } from "./command"
 
+/**
+ * Props for the dialog-backed command palette.
+ *
+ * Includes all root `Command` props and adds native `<dialog>` visibility
+ * control.
+ */
 export type CommandDialogProps = CommandProps & {
+  /** Ref forwarded to the native `<dialog>` element. */
   ref?: Ref<HTMLDialogElement>
+  /** Controls whether the dialog is shown with `showModal()`. */
   open: boolean
+  /** Called when the dialog requests to change its open state. */
   onOpenChange: (open: boolean) => void
   /** Class applied to the native `<dialog>` element. */
   dialogClassName?: string
@@ -25,11 +34,11 @@ export type CommandDialogProps = CommandProps & {
 }
 
 /**
- * Wraps <Command> in a native <dialog> element. The browser provides
- * focus trap, ESC-to-close, return-focus, top-layer portal behavior,
- * aria-modal, and the ::backdrop pseudo-element for free.
+ * Wraps `Command` in a native `<dialog>` element. The browser provides focus
+ * trapping, ESC-to-close, return-focus, top-layer behavior, `aria-modal`, and
+ * the `::backdrop` pseudo-element.
  *
- * Requires a browser that supports <dialog>: Safari 15.4+, Chrome 37+,
+ * Requires a browser that supports `<dialog>`: Safari 15.4+, Chrome 37+, and
  * Firefox 98+.
  */
 export const CommandDialog = ({
