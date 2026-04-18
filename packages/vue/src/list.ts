@@ -1,16 +1,16 @@
-import { defineComponent, h, mergeProps } from 'vue'
+import { type DefineComponent, defineComponent, h, mergeProps, type VNode } from "vue"
 
-export const CommandList = defineComponent({
-  name: 'CommandList',
+export const CommandList: DefineComponent = defineComponent({
+  name: "CommandList",
   inheritAttrs: false,
-  setup(_props, { attrs, slots }) {
-    return () =>
+  setup(_props, { attrs, slots }): () => VNode {
+    return (): VNode =>
       h(
-        'div',
+        "div",
         mergeProps(
           {
-            'command-palette-list': '',
-            role: 'listbox',
+            "command-palette-list": "",
+            role: "listbox",
           },
           attrs,
         ),

@@ -1,5 +1,5 @@
-import { h } from 'vue'
-import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '../src'
+import { h } from "vue"
+import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "../src"
 
 export const itemNode = (value: string, label: string, props: Record<string, unknown> = {}) =>
   h(CommandItem, { value, ...props }, { default: () => label })
@@ -23,7 +23,7 @@ export const commandSlots = (children: ReturnType<typeof h>[]) => ({
 
 export const commandWithInputSlots = (children: ReturnType<typeof h>[]) => ({
   default: () => [
-    h(CommandInput, { placeholder: 'Search' }),
+    h(CommandInput, { placeholder: "Search" }),
     h(
       CommandList,
       {},
@@ -35,6 +35,6 @@ export const commandWithInputSlots = (children: ReturnType<typeof h>[]) => ({
 })
 
 export const baseMenuSlots = () =>
-  commandWithInputSlots([itemNode('a', 'A'), itemNode('b', 'B'), itemNode('c', 'C')])
+  commandWithInputSlots([itemNode("a", "A"), itemNode("b", "B"), itemNode("c", "C")])
 
 export { Command, CommandInput, CommandItem, CommandList }

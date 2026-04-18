@@ -2,7 +2,7 @@
 export type FilterFn = (value: string, search: string, keywords: readonly string[]) => number
 
 /** Built-in filters plus a custom scorer. */
-export type CommandFilter = FilterFn | 'fuzzy' | 'contains' | 'none'
+export type CommandFilter = FilterFn | "fuzzy" | "contains" | "none"
 
 export type ItemInput = {
   /** Stable identity. Required, can be ''. Never used as a CSS selector. */
@@ -78,12 +78,12 @@ export type CommandStore = {
   // Item / group registration
   registerItem: (item: ItemInput) => () => void
   registerGroup: (group: GroupInput) => () => void
-  updateItem: (value: string, patch: Partial<Omit<ItemInput, 'value'>>) => void
+  updateItem: (value: string, patch: Partial<Omit<ItemInput, "value">>) => void
   updateOptions: (
     options: Partial<
       Pick<
         CommandStoreOptions,
-        'filter' | 'loop' | 'selectOnHover' | 'onSearchChange' | 'onValueChange'
+        "filter" | "loop" | "selectOnHover" | "onSearchChange" | "onValueChange"
       >
     >,
   ) => void

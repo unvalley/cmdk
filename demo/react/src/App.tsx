@@ -6,8 +6,8 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@command-palette/react'
-import { useEffect, useState } from 'react'
+} from "@command-palette/react"
+import { useEffect, useState } from "react"
 
 type Action = {
   value: string
@@ -17,22 +17,22 @@ type Action = {
 }
 
 const NAVIGATION: readonly Action[] = [
-  { value: 'go-home', label: 'Go to Home', hint: 'G H' },
-  { value: 'go-projects', label: 'Go to Projects', hint: 'G P' },
-  { value: 'go-issues', label: 'Go to Issues', hint: 'G I', keywords: ['bugs', 'tasks'] },
-  { value: 'go-settings', label: 'Go to Settings', hint: 'G S', keywords: ['prefs'] },
+  { value: "go-home", label: "Go to Home", hint: "G H" },
+  { value: "go-projects", label: "Go to Projects", hint: "G P" },
+  { value: "go-issues", label: "Go to Issues", hint: "G I", keywords: ["bugs", "tasks"] },
+  { value: "go-settings", label: "Go to Settings", hint: "G S", keywords: ["prefs"] },
 ]
 
 const ACTIONS: readonly Action[] = [
-  { value: 'new-file', label: 'New file', hint: '⌘N', keywords: ['create'] },
-  { value: 'save', label: 'Save', hint: '⌘S' },
-  { value: 'duplicate', label: 'Duplicate', hint: '⌘D' },
-  { value: 'delete', label: 'Delete', keywords: ['remove', 'trash'] },
+  { value: "new-file", label: "New file", hint: "⌘N", keywords: ["create"] },
+  { value: "save", label: "Save", hint: "⌘S" },
+  { value: "duplicate", label: "Duplicate", hint: "⌘D" },
+  { value: "delete", label: "Delete", keywords: ["remove", "trash"] },
 ]
 
 const ACCOUNT: readonly Action[] = [
-  { value: 'profile', label: 'View profile', keywords: ['me', 'account'] },
-  { value: 'sign-out', label: 'Sign out', keywords: ['logout', 'exit'] },
+  { value: "profile", label: "View profile", keywords: ["me", "account"] },
+  { value: "sign-out", label: "Sign out", keywords: ["logout", "exit"] },
 ]
 
 export const App = () => {
@@ -41,13 +41,13 @@ export const App = () => {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
         setOpen((v) => !v)
       }
     }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    document.addEventListener("keydown", onKey)
+    return () => document.removeEventListener("keydown", onKey)
   }, [])
 
   const run = (value: string) => {

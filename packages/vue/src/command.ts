@@ -1,5 +1,7 @@
-import { type CommandFilter, createCommand } from '@command-palette/core'
+import { type CommandFilter, createCommand } from "@command-palette/core"
 import {
+  type DefineComponent,
+  type VNode,
   defineComponent,
   h,
   mergeProps,
@@ -8,31 +10,31 @@ import {
   provide,
   shallowRef,
   watch,
-} from 'vue'
-import { CommandIdAllocatorKey, CommandStoreKey, CommandVersionKey } from './context'
-import { commandProps, type CommandProps as SharedCommandProps } from './shared'
+} from "vue"
+import { CommandIdAllocatorKey, CommandStoreKey, CommandVersionKey } from "./context"
+import { commandProps, type CommandProps as SharedCommandProps } from "./shared"
 
 export type CommandProps = SharedCommandProps & {
   filter?: CommandFilter
 }
 
-export const Command = defineComponent({
-  name: 'Command',
+export const Command: DefineComponent<CommandProps> = defineComponent({
+  name: "Command",
   inheritAttrs: false,
   props: commandProps,
   emits: {
-    'update:modelValue': (_value: string) => true,
-    'update:search': (_search: string) => true,
+    "update:modelValue": (_value: string): boolean => true,
+    "update:search": (_search: string): boolean => true,
   },
-  setup(props, { attrs, emit, slots }) {
+  setup(props, { attrs, emit, slots }): () => VNode {
     let nextId = 0
     const store = createCommand({
       filter: props.filter,
       initialSearch: props.search ?? props.defaultSearch,
       initialValue: props.modelValue ?? props.defaultValue,
       loop: props.loop,
-      onSearchChange: (search) => emit('update:search', search),
-      onValueChange: (value) => emit('update:modelValue', value),
+      onSearchChange: (search) => emit("update:search", search),
+      onValueChange: (value) => emit("update:modelValue", value),
       selectOnHover: props.selectOnHover,
     })
 
@@ -60,7 +62,7 @@ export const Command = defineComponent({
       (value) => {
         if (value !== undefined) store.setValue(value)
       },
-      { flush: 'post', immediate: true },
+      { flush: "post", immediate: true },
     )
 
     watch(
@@ -68,7 +70,7 @@ export const Command = defineComponent({
       (search) => {
         if (search !== undefined) store.setSearch(search)
       },
-      { flush: 'post', immediate: true },
+      { flush: "post", immediate: true },
     )
 
     watch(
@@ -77,8 +79,8 @@ export const Command = defineComponent({
         store.updateOptions({
           filter,
           loop,
-          onSearchChange: (search) => emit('update:search', search),
-          onValueChange: (value) => emit('update:modelValue', value),
+          onSearchChange: (search) => emit("update:search", search),
+          onValueChange: (value) => emit("update:modelValue", value),
           selectOnHover,
         })
       },
@@ -89,37 +91,37 @@ export const Command = defineComponent({
       if (store.getState().isComposing) return
 
       switch (event.key) {
-        case 'ArrowDown':
+        case "ArrowDown":
           event.preventDefault()
           store.selectNext()
           break
-        case 'ArrowUp':
+        case "ArrowUp":
           event.preventDefault()
           store.selectPrev()
           break
-        case 'Home':
+        case "Home":
           event.preventDefault()
           store.selectFirst()
           break
-        case 'End':
+        case "End":
           event.preventDefault()
           store.selectLast()
           break
-        case 'Enter':
+        case "Enter":
           event.preventDefault()
           store.triggerSelect(event)
           break
       }
     }
 
-    return () =>
+    return (): VNode =>
       h(
-        'div',
+        "div",
         mergeProps(
           {
-            'command-palette-root': '',
-            role: 'application',
-            'aria-label': props.label,
+            "command-palette-root": "",
+            role: "application",
+            "aria-label": props.label,
             onKeydown: handleKeydown,
           },
           attrs,

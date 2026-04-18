@@ -1,27 +1,38 @@
-import { defineComponent, type ExtractPublicPropTypes, h, mergeProps } from 'vue'
+import {
+  type DefineComponent,
+  defineComponent,
+  type ExtractPublicPropTypes,
+  h,
+  mergeProps,
+  type VNode,
+} from "vue"
 
-export const commandLoadingProps = {
+type CommandLoadingPropsOptions = {
+  progress: NumberConstructor
+}
+
+export const commandLoadingProps: CommandLoadingPropsOptions = {
   progress: Number,
-} as const
+}
 
 export type CommandLoadingProps = ExtractPublicPropTypes<typeof commandLoadingProps>
 
-export const CommandLoading = defineComponent({
-  name: 'CommandLoading',
+export const CommandLoading: DefineComponent<CommandLoadingProps> = defineComponent({
+  name: "CommandLoading",
   inheritAttrs: false,
   props: commandLoadingProps,
-  setup(props, { attrs, slots }) {
-    return () =>
+  setup(props, { attrs, slots }): () => VNode {
+    return (): VNode =>
       h(
-        'div',
+        "div",
         mergeProps(
           {
-            'command-palette-loading': '',
-            role: 'progressbar',
-            'aria-valuenow':
+            "command-palette-loading": "",
+            role: "progressbar",
+            "aria-valuenow":
               props.progress != null ? Math.round(props.progress * 100).toString() : undefined,
-            'aria-valuemin': 0,
-            'aria-valuemax': 100,
+            "aria-valuemin": 0,
+            "aria-valuemax": 100,
           },
           attrs,
         ),

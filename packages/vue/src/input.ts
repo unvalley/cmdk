@@ -1,26 +1,30 @@
-import { defineComponent, h, mergeProps, ref, watch } from 'vue'
-import { useCommandSlice, useCommandStore } from './context'
+import { type DefineComponent, defineComponent, h, mergeProps, ref, type VNode, watch } from "vue"
+import { useCommandSlice, useCommandStore } from "./context"
 
-export const commandInputProps = {
+type CommandInputPropsOptions = {
+  modelValue: StringConstructor
+}
+
+export const commandInputProps: CommandInputPropsOptions = {
   modelValue: String,
-} as const
+}
 
 export type CommandInputProps = {
   modelValue?: string
 }
 
-export const CommandInput = defineComponent({
-  name: 'CommandInput',
+export const CommandInput: DefineComponent<CommandInputProps> = defineComponent({
+  name: "CommandInput",
   inheritAttrs: false,
   props: commandInputProps,
   emits: {
-    'update:modelValue': (_value: string) => true,
+    "update:modelValue": (_value: string): boolean => true,
   },
-  setup(props, { attrs, emit }) {
+  setup(props, { attrs, emit }): () => VNode {
     const store = useCommandStore()
     const search = useCommandSlice((state) => state.search)
     const hasVisibleItems = useCommandSlice((state) => state.filteredOrder.length > 0)
-    const pendingValue = ref('')
+    const pendingValue = ref("")
 
     watch(
       () => props.modelValue,
@@ -40,7 +44,7 @@ export const CommandInput = defineComponent({
       }
 
       store.setSearch(target.value)
-      emit('update:modelValue', target.value)
+      emit("update:modelValue", target.value)
     }
 
     const handleCompositionStart = (event: CompositionEvent): void => {
@@ -53,21 +57,21 @@ export const CommandInput = defineComponent({
       const target = event.target as HTMLInputElement
       const finalValue = target.value || pendingValue.value
       store.setSearch(finalValue)
-      emit('update:modelValue', finalValue)
-      pendingValue.value = ''
+      emit("update:modelValue", finalValue)
+      pendingValue.value = ""
     }
 
-    return () =>
+    return (): VNode =>
       h(
-        'input',
+        "input",
         mergeProps(
           {
-            'command-palette-input': '',
-            role: 'combobox',
-            'aria-autocomplete': 'list',
-            'aria-expanded': hasVisibleItems.value ? 'true' : 'false',
-            autoComplete: 'off',
-            autoCorrect: 'off',
+            "command-palette-input": "",
+            role: "combobox",
+            "aria-autocomplete": "list",
+            "aria-expanded": hasVisibleItems.value ? "true" : "false",
+            autoComplete: "off",
+            autoCorrect: "off",
             spellcheck: false,
             value: props.modelValue ?? search.value,
             onInput: handleInput,

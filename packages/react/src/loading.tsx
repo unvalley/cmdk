@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode, Ref } from 'react'
+import type { HTMLAttributes, JSX, ReactNode, Ref } from "react"
 
 export type CommandLoadingProps = HTMLAttributes<HTMLDivElement> & {
   ref?: Ref<HTMLDivElement>
@@ -7,7 +7,12 @@ export type CommandLoadingProps = HTMLAttributes<HTMLDivElement> & {
   children?: ReactNode
 }
 
-export const CommandLoading = ({ ref, progress, children, ...rest }: CommandLoadingProps) => (
+export const CommandLoading = ({
+  ref,
+  progress,
+  children,
+  ...rest
+}: CommandLoadingProps): JSX.Element => (
   <div
     ref={ref}
     command-palette-loading=""

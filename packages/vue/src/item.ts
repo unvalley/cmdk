@@ -1,7 +1,28 @@
-import { computed, defineComponent, h, inject, mergeProps, type PropType, watch } from 'vue'
-import { GroupIdKey, useCommandId, useCommandSlice, useCommandStore } from './context'
+import {
+  computed,
+  type DefineComponent,
+  defineComponent,
+  h,
+  inject,
+  mergeProps,
+  type PropType,
+  type VNode,
+  watch,
+} from "vue"
+import { GroupIdKey, useCommandId, useCommandSlice, useCommandStore } from "./context"
 
-export const commandItemProps = {
+type CommandItemPropsOptions = {
+  value: {
+    type: StringConstructor
+    required: true
+  }
+  keywords: PropType<readonly string[]>
+  disabled: BooleanConstructor
+  forceMount: BooleanConstructor
+  groupId: StringConstructor
+}
+
+export const commandItemProps: CommandItemPropsOptions = {
   value: {
     type: String,
     required: true,
@@ -10,7 +31,7 @@ export const commandItemProps = {
   disabled: Boolean,
   forceMount: Boolean,
   groupId: String,
-} as const
+}
 
 export type CommandItemProps = {
   value: string
@@ -20,18 +41,18 @@ export type CommandItemProps = {
   groupId?: string
 }
 
-export const CommandItem = defineComponent({
-  name: 'CommandItem',
+export const CommandItem: DefineComponent<CommandItemProps> = defineComponent({
+  name: "CommandItem",
   inheritAttrs: false,
   props: commandItemProps,
   emits: {
-    select: (_value: string, _event?: Event) => true,
+    select: (_value: string, _event?: Event): boolean => true,
   },
-  setup(props, { attrs, emit, slots }) {
+  setup(props, { attrs, emit, slots }): () => VNode | null {
     const store = useCommandStore()
     const inheritedGroupId = inject(GroupIdKey, null)
     const resolvedGroupId = computed(() => props.groupId ?? inheritedGroupId ?? undefined)
-    const id = useCommandId('item')
+    const id = useCommandId("item")
 
     watch(
       () => props.value,
@@ -42,7 +63,7 @@ export const CommandItem = defineComponent({
           disabled: props.disabled,
           forceMount: props.forceMount,
           groupId: resolvedGroupId.value,
-          onSelect: (selectedValue, event) => emit('select', selectedValue, event),
+          onSelect: (selectedValue, event) => emit("select", selectedValue, event),
         })
 
         onCleanup(unregister)
@@ -80,20 +101,20 @@ export const CommandItem = defineComponent({
       store.triggerSelect(event)
     }
 
-    return () => {
+    return (): VNode | null => {
       if (!isVisible.value) return null
 
       return h(
-        'div',
+        "div",
         mergeProps(
           {
             id,
-            'command-palette-item': '',
-            role: 'option',
-            'aria-selected': isSelected.value ? 'true' : 'false',
-            'aria-disabled': props.disabled ? 'true' : undefined,
-            'data-selected': isSelected.value ? 'true' : undefined,
-            'data-disabled': props.disabled ? 'true' : undefined,
+            "command-palette-item": "",
+            role: "option",
+            "aria-selected": isSelected.value ? "true" : "false",
+            "aria-disabled": props.disabled ? "true" : undefined,
+            "data-selected": isSelected.value ? "true" : undefined,
+            "data-disabled": props.disabled ? "true" : undefined,
             onPointermove: handlePointerMove,
             onClick: handleClick,
           },

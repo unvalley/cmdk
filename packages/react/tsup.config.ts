@@ -1,14 +1,14 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from "tsup"
 
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
+  entry: ["src/index.ts"],
+  format: ["esm"],
   dts: {
-    resolve: ['@command-palette/core'],
+    resolve: ["@command-palette/core"],
   },
   clean: true,
   sourcemap: true,
-  target: 'es2022',
-  external: ['react', 'react-dom'],
-  noExternal: ['@command-palette/core'],
+  target: "es2022",
+  external: ["react", "react-dom"],
+  noExternal: ["@command-palette/core"],
 })

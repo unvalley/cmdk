@@ -1,21 +1,21 @@
-import { defineComponent, h, mergeProps } from 'vue'
-import { useCommandSlice } from './context'
+import { type DefineComponent, defineComponent, h, mergeProps, type VNode } from "vue"
+import { useCommandSlice } from "./context"
 
-export const CommandEmpty = defineComponent({
-  name: 'CommandEmpty',
+export const CommandEmpty: DefineComponent = defineComponent({
+  name: "CommandEmpty",
   inheritAttrs: false,
-  setup(_props, { attrs, slots }) {
+  setup(_props, { attrs, slots }): () => VNode | null {
     const isEmpty = useCommandSlice((state) => state.filteredOrder.length === 0)
 
-    return () => {
+    return (): VNode | null => {
       if (!isEmpty.value) return null
 
       return h(
-        'div',
+        "div",
         mergeProps(
           {
-            'command-palette-empty': '',
-            role: 'presentation',
+            "command-palette-empty": "",
+            role: "presentation",
           },
           attrs,
         ),

@@ -1,6 +1,6 @@
-export { normalize } from './normalize'
-export { commandScore } from './score'
-export { createCommand } from './store'
+export { normalize } from "./normalize"
+export { commandScore } from "./score"
+export { createCommand } from "./store"
 export type {
   CommandFilter,
   CommandState,
@@ -11,4 +11,4 @@ export type {
   GroupInput,
   ItemData,
   ItemInput,
-} from './types'
+} from "./types"

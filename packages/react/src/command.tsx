@@ -1,6 +1,6 @@
-import { type CommandFilter, type CommandStore, createCommand } from '@command-palette/core'
-import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef } from 'react'
-import { CommandContext } from './context'
+import { type CommandFilter, type CommandStore, createCommand } from "@command-palette/core"
+import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef } from "react"
+import { CommandContext } from "./context"
 
 export type CommandProps = {
   label?: string
@@ -75,23 +75,23 @@ export const Command = ({ label, className, children, ...options }: CommandProps
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (store.getState().isComposing) return
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault()
         store.selectNext()
         break
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault()
         store.selectPrev()
         break
-      case 'Home':
+      case "Home":
         e.preventDefault()
         store.selectFirst()
         break
-      case 'End':
+      case "End":
         e.preventDefault()
         store.selectLast()
         break
-      case 'Enter':
+      case "Enter":
         e.preventDefault()
         store.triggerSelect(e.nativeEvent)
         break

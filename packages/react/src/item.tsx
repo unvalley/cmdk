@@ -1,5 +1,6 @@
 import {
   type HTMLAttributes,
+  type JSX,
   type MouseEvent,
   type ReactNode,
   type Ref,
@@ -7,10 +8,10 @@ import {
   useEffect,
   useId,
   useRef,
-} from 'react'
-import { GroupContext, useCommandSlice, useCommandStore } from './context'
+} from "react"
+import { GroupContext, useCommandSlice, useCommandStore } from "./context"
 
-export type CommandItemProps = Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> & {
+export type CommandItemProps = Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> & {
   ref?: Ref<HTMLDivElement>
   value: string
   keywords?: readonly string[]
@@ -31,7 +32,7 @@ export const CommandItem = ({
   onSelect,
   children,
   ...rest
-}: CommandItemProps) => {
+}: CommandItemProps): JSX.Element | null => {
   const store = useCommandStore()
   const id = useId()
   // Prop wins; otherwise inherit from the nearest <CommandGroup>.

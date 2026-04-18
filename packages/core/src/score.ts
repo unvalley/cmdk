@@ -1,5 +1,5 @@
-import { normalize } from './normalize'
-import type { CommandFilter, FilterFn } from './types'
+import { normalize } from "./normalize"
+import type { CommandFilter, FilterFn } from "./types"
 
 const SCORE_CONTINUE_MATCH = 1
 const SCORE_SPACE_WORD_JUMP = 0.9
@@ -138,7 +138,7 @@ export const prepareCommandScoreHaystack = (
   string: string,
   aliases: readonly string[],
 ): PreparedCommandScoreHaystack => {
-  const haystack = aliases.length > 0 ? `${string} ${aliases.join(' ')}` : string
+  const haystack = aliases.length > 0 ? `${string} ${aliases.join(" ")}` : string
   return {
     haystack,
     normalizedHaystack: normalize(haystack),
@@ -175,7 +175,7 @@ export const commandContainsScorePrepared = (
   prepared: PreparedCommandScoreHaystack,
   normalizedAbbreviation: string,
 ): number => {
-  if (normalizedAbbreviation === '') return 1
+  if (normalizedAbbreviation === "") return 1
   if (prepared.normalizedHaystack.startsWith(normalizedAbbreviation)) return 1
   if (hasWordBoundaryMatch(prepared.normalizedHaystack, normalizedAbbreviation)) return 0.95
   if (prepared.normalizedHaystack.includes(normalizedAbbreviation)) return 0.9
@@ -186,12 +186,12 @@ export const commandBuiltInScorePrepared = (
   prepared: PreparedCommandScoreHaystack,
   abbreviation: string,
   normalizedAbbreviation: string,
-  mode: Exclude<CommandFilter, FilterFn | 'none'>,
+  mode: Exclude<CommandFilter, FilterFn | "none">,
 ): number => {
   switch (mode) {
-    case 'fuzzy':
+    case "fuzzy":
       return commandScorePrepared(prepared, abbreviation, normalizedAbbreviation)
-    case 'contains':
+    case "contains":
       return commandContainsScorePrepared(prepared, normalizedAbbreviation)
   }
 }

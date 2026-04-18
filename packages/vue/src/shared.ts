@@ -1,7 +1,21 @@
-import type { CommandFilter } from '@command-palette/core'
-import type { ExtractPublicPropTypes, PropType } from 'vue'
+import type { CommandFilter } from "@command-palette/core"
+import type { ExtractPublicPropTypes, PropType } from "vue"
 
-export const commandProps = {
+type CommandPropsOptions = {
+  label: StringConstructor
+  modelValue: StringConstructor
+  defaultValue: StringConstructor
+  search: StringConstructor
+  defaultSearch: StringConstructor
+  filter: PropType<CommandFilter>
+  loop: BooleanConstructor
+  selectOnHover: {
+    type: PropType<boolean | undefined>
+    default: undefined
+  }
+}
+
+export const commandProps: CommandPropsOptions = {
   label: String,
   modelValue: String,
   defaultValue: String,

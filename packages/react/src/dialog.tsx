@@ -1,4 +1,5 @@
 import {
+  type JSX,
   type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
@@ -6,8 +7,8 @@ import {
   useEffect,
   useRef,
   useState,
-} from 'react'
-import { Command, type CommandProps } from './command'
+} from "react"
+import { Command, type CommandProps } from "./command"
 
 export type CommandDialogProps = CommandProps & {
   ref?: Ref<HTMLDialogElement>
@@ -43,10 +44,10 @@ export const CommandDialog = ({
   search: searchProp,
   onSearchChange,
   ...commandProps
-}: CommandDialogProps) => {
+}: CommandDialogProps): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const isSearchControlled = searchProp !== undefined
-  const [internalSearch, setInternalSearch] = useState('')
+  const [internalSearch, setInternalSearch] = useState("")
   const search = isSearchControlled ? searchProp : internalSearch
 
   const handleSearchChange = (next: string) => {
@@ -57,7 +58,7 @@ export const CommandDialog = ({
   // Forward ref to the dialog element.
   useEffect(() => {
     if (!ref) return
-    if (typeof ref === 'function') ref(dialogRef.current)
+    if (typeof ref === "function") ref(dialogRef.current)
     else ref.current = dialogRef.current
   })
 
@@ -73,7 +74,7 @@ export const CommandDialog = ({
   // Only applies when search is uncontrolled.
   useEffect(() => {
     if (!open && resetSearchOnClose && !isSearchControlled) {
-      setInternalSearch('')
+      setInternalSearch("")
     }
   }, [open, resetSearchOnClose, isSearchControlled])
 
@@ -83,8 +84,8 @@ export const CommandDialog = ({
     const el = dialogRef.current
     if (!el) return
     const handleClose = () => onOpenChange(false)
-    el.addEventListener('close', handleClose)
-    return () => el.removeEventListener('close', handleClose)
+    el.addEventListener("close", handleClose)
+    return () => el.removeEventListener("close", handleClose)
   }, [onOpenChange])
 
   // Treat a click whose target is the <dialog> itself (not a descendant)
@@ -97,7 +98,7 @@ export const CommandDialog = ({
   // browsers let the inner <input> swallow the ESC keydown before the
   // dialog can react. Intercept it explicitly.
   const handleKeyDown = (e: KeyboardEvent<HTMLDialogElement>) => {
-    if (e.key !== 'Escape') return
+    if (e.key !== "Escape") return
     // Allow consumers to pre-empt (and respect IME composition).
     if (e.defaultPrevented || e.nativeEvent.isComposing) return
     e.preventDefault()

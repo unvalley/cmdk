@@ -1,9 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
-import { Command } from '../src/command'
-import { CommandInput } from '../src/input'
-import { CommandItem } from '../src/item'
-import { CommandList } from '../src/list'
+import { fireEvent, render, screen } from "@testing-library/react"
+import { describe, expect, it, vi } from "vitest"
+import { Command } from "../src/command"
+import { CommandInput } from "../src/input"
+import { CommandItem } from "../src/item"
+import { CommandList } from "../src/list"
 
 function setup(props?: Parameters<typeof Command>[0]) {
   return render(
@@ -22,42 +22,42 @@ function selected(): string | null {
   return document.querySelector('[data-selected="true"]')?.textContent ?? null
 }
 
-describe('keyboard navigation', () => {
-  it('ArrowDown moves selection forward', () => {
+describe("keyboard navigation", () => {
+  it("ArrowDown moves selection forward", () => {
     setup()
-    const input = screen.getByPlaceholderText('Search')
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    expect(selected()).toBe('A')
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    expect(selected()).toBe('B')
+    const input = screen.getByPlaceholderText("Search")
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    expect(selected()).toBe("A")
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    expect(selected()).toBe("B")
   })
 
-  it('ArrowUp moves selection backward', () => {
+  it("ArrowUp moves selection backward", () => {
     setup()
-    const input = screen.getByPlaceholderText('Search')
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    fireEvent.keyDown(input, { key: 'ArrowUp' })
-    expect(selected()).toBe('A')
+    const input = screen.getByPlaceholderText("Search")
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    fireEvent.keyDown(input, { key: "ArrowUp" })
+    expect(selected()).toBe("A")
   })
 
-  it('Home selects first', () => {
+  it("Home selects first", () => {
     setup()
-    const input = screen.getByPlaceholderText('Search')
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    fireEvent.keyDown(input, { key: 'Home' })
-    expect(selected()).toBe('A')
+    const input = screen.getByPlaceholderText("Search")
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    fireEvent.keyDown(input, { key: "Home" })
+    expect(selected()).toBe("A")
   })
 
-  it('End selects last', () => {
+  it("End selects last", () => {
     setup()
-    const input = screen.getByPlaceholderText('Search')
-    fireEvent.keyDown(input, { key: 'End' })
-    expect(selected()).toBe('C')
+    const input = screen.getByPlaceholderText("Search")
+    fireEvent.keyDown(input, { key: "End" })
+    expect(selected()).toBe("C")
   })
 
-  it('Enter triggers onSelect for current item', () => {
+  it("Enter triggers onSelect for current item", () => {
     const onSelect = vi.fn()
     render(
       <Command>
@@ -69,26 +69,26 @@ describe('keyboard navigation', () => {
         </CommandList>
       </Command>,
     )
-    const input = screen.getByPlaceholderText('Search')
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    fireEvent.keyDown(input, { key: 'Enter' })
-    expect(onSelect).toHaveBeenCalledWith('a', expect.any(Object))
+    const input = screen.getByPlaceholderText("Search")
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    fireEvent.keyDown(input, { key: "Enter" })
+    expect(onSelect).toHaveBeenCalledWith("a", expect.any(Object))
   })
 
-  it('loop wraps ArrowDown past end', () => {
+  it("loop wraps ArrowDown past end", () => {
     setup({ loop: true })
-    const input = screen.getByPlaceholderText('Search')
-    fireEvent.keyDown(input, { key: 'End' })
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    expect(selected()).toBe('A')
+    const input = screen.getByPlaceholderText("Search")
+    fireEvent.keyDown(input, { key: "End" })
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    expect(selected()).toBe("A")
   })
 
-  it('updates loop behavior after rerender', () => {
+  it("updates loop behavior after rerender", () => {
     const view = setup({ loop: false })
-    const input = screen.getByPlaceholderText('Search')
-    fireEvent.keyDown(input, { key: 'End' })
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    expect(selected()).toBe('C')
+    const input = screen.getByPlaceholderText("Search")
+    fireEvent.keyDown(input, { key: "End" })
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    expect(selected()).toBe("C")
 
     view.rerender(
       <Command loop>
@@ -101,7 +101,7 @@ describe('keyboard navigation', () => {
       </Command>,
     )
 
-    fireEvent.keyDown(input, { key: 'ArrowDown' })
-    expect(selected()).toBe('A')
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    expect(selected()).toBe("A")
   })
 })

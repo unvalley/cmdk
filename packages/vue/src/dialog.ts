@@ -1,16 +1,18 @@
-import type { CommandFilter } from '@command-palette/core'
+import type { CommandFilter } from "@command-palette/core"
 import {
   computed,
+  type DefineComponent,
   defineComponent,
   h,
   mergeProps,
   onBeforeUnmount,
   onMounted,
   ref,
+  type VNode,
   watch,
-} from 'vue'
-import { Command } from './command'
-import { commandProps, type CommandProps as SharedCommandProps } from './shared'
+} from "vue"
+import { Command } from "./command"
+import { commandProps, type CommandProps as SharedCommandProps } from "./shared"
 
 export type CommandDialogProps = SharedCommandProps & {
   filter?: CommandFilter
@@ -19,8 +21,8 @@ export type CommandDialogProps = SharedCommandProps & {
   resetSearchOnClose?: boolean
 }
 
-export const CommandDialog = defineComponent({
-  name: 'CommandDialog',
+export const CommandDialog: DefineComponent<CommandDialogProps> = defineComponent({
+  name: "CommandDialog",
   inheritAttrs: false,
   props: {
     ...commandProps,
@@ -35,11 +37,11 @@ export const CommandDialog = defineComponent({
     },
   },
   emits: {
-    'update:modelValue': (_value: string) => true,
-    'update:search': (_search: string) => true,
-    'update:open': (_open: boolean) => true,
+    "update:modelValue": (_value: string): boolean => true,
+    "update:search": (_search: string): boolean => true,
+    "update:open": (_open: boolean): boolean => true,
   },
-  setup(props, { attrs, emit, slots }) {
+  setup(props, { attrs, emit, slots }): () => VNode {
     const dialogRef = ref<HTMLDialogElement | null>(null)
     const isSearchControlled = computed(() => props.search !== undefined)
     const commandInstanceKey = ref(0)
@@ -56,23 +58,23 @@ export const CommandDialog = defineComponent({
     }
 
     const handleSearchChange = (nextSearch: string): void => {
-      emit('update:search', nextSearch)
+      emit("update:search", nextSearch)
     }
 
     const handleClose = (): void => {
-      emit('update:open', false)
+      emit("update:open", false)
     }
 
     onMounted(() => {
       const dialog = dialogRef.value
       if (!dialog) return
 
-      dialog.addEventListener('close', handleClose)
+      dialog.addEventListener("close", handleClose)
       syncDialogState(props.open)
     })
 
     onBeforeUnmount(() => {
-      dialogRef.value?.removeEventListener('close', handleClose)
+      dialogRef.value?.removeEventListener("close", handleClose)
     })
 
     watch(
@@ -93,24 +95,24 @@ export const CommandDialog = defineComponent({
 
     const handleClick = (event: MouseEvent): void => {
       if (event.target === event.currentTarget) {
-        emit('update:open', false)
+        emit("update:open", false)
       }
     }
 
     const handleKeydown = (event: KeyboardEvent): void => {
-      if (event.key !== 'Escape') return
+      if (event.key !== "Escape") return
       if (event.defaultPrevented || event.isComposing) return
       event.preventDefault()
-      emit('update:open', false)
+      emit("update:open", false)
     }
 
-    return () =>
+    return (): VNode =>
       h(
-        'dialog',
+        "dialog",
         mergeProps(
           {
             ref: dialogRef,
-            'command-palette-dialog': '',
+            "command-palette-dialog": "",
             class: props.dialogClass,
             onClick: handleClick,
             onKeydown: handleKeydown,
@@ -129,8 +131,8 @@ export const CommandDialog = defineComponent({
             loop: props.loop,
             selectOnHover: props.selectOnHover,
             ...(isSearchControlled.value ? { search: props.search } : {}),
-            'onUpdate:modelValue': (value: string) => emit('update:modelValue', value),
-            'onUpdate:search': handleSearchChange,
+            "onUpdate:modelValue": (value: string) => emit("update:modelValue", value),
+            "onUpdate:search": handleSearchChange,
           },
           slots,
         ),

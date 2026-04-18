@@ -1,28 +1,39 @@
-import { defineComponent, type ExtractPublicPropTypes, h, mergeProps } from 'vue'
-import { useCommandSlice } from './context'
+import {
+  type DefineComponent,
+  defineComponent,
+  type ExtractPublicPropTypes,
+  h,
+  mergeProps,
+  type VNode,
+} from "vue"
+import { useCommandSlice } from "./context"
 
-export const commandSeparatorProps = {
+type CommandSeparatorPropsOptions = {
+  alwaysRender: BooleanConstructor
+}
+
+export const commandSeparatorProps: CommandSeparatorPropsOptions = {
   alwaysRender: Boolean,
-} as const
+}
 
 export type CommandSeparatorProps = ExtractPublicPropTypes<typeof commandSeparatorProps>
 
-export const CommandSeparator = defineComponent({
-  name: 'CommandSeparator',
+export const CommandSeparator: DefineComponent<CommandSeparatorProps> = defineComponent({
+  name: "CommandSeparator",
   inheritAttrs: false,
   props: commandSeparatorProps,
-  setup(props, { attrs }) {
+  setup(props, { attrs }): () => VNode | null {
     const search = useCommandSlice((state) => state.search)
 
-    return () => {
-      if (!props.alwaysRender && search.value !== '') return null
+    return (): VNode | null => {
+      if (!props.alwaysRender && search.value !== "") return null
 
       return h(
-        'div',
+        "div",
         mergeProps(
           {
-            'command-palette-separator': '',
-            role: 'separator',
+            "command-palette-separator": "",
+            role: "separator",
           },
           attrs,
         ),

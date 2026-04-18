@@ -7,7 +7,7 @@ const SPACE_LIKE = /[\s-]/g
  */
 export const normalize = (input: string): string =>
   input
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
     .toLowerCase()
-    .replace(SPACE_LIKE, ' ')
+    .replace(SPACE_LIKE, " ")

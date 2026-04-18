@@ -1,5 +1,5 @@
-import { normalize } from './normalize'
-import { commandBuiltInScorePrepared, prepareCommandScoreHaystack } from './score'
+import { normalize } from "./normalize"
+import { commandBuiltInScorePrepared, prepareCommandScoreHaystack } from "./score"
 import type {
   CommandFilter,
   CommandState,
@@ -10,13 +10,13 @@ import type {
   GroupInput,
   ItemData,
   ItemInput,
-} from './types'
+} from "./types"
 
-const isDev = process.env.NODE_ENV !== 'production'
-const DEFAULT_FILTER: Exclude<CommandFilter, FilterFn> = 'fuzzy'
+const isDev = process.env.NODE_ENV !== "production"
+const DEFAULT_FILTER: Exclude<CommandFilter, FilterFn> = "fuzzy"
 
 const isBuiltInFilter = (filter: CommandFilter): filter is Exclude<CommandFilter, FilterFn> =>
-  typeof filter === 'string'
+  typeof filter === "string"
 
 export const createCommand = (options: CommandStoreOptions = {}): CommandStore => {
   let filter = options.filter ?? DEFAULT_FILTER
@@ -28,9 +28,9 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
   let nextOrder = 0
   const items = new Map<string, ItemData>()
   const groups = new Map<string, GroupData>()
-  let search = options.initialSearch ?? ''
-  let value = options.initialValue ?? ''
-  let hasBeenSelected = value !== '' // true if controlled with non-empty initial
+  let search = options.initialSearch ?? ""
+  let value = options.initialValue ?? ""
+  let hasBeenSelected = value !== "" // true if controlled with non-empty initial
   let isComposing = false
   let filteredOrder: string[] = []
   let visibleSet: Set<string> = new Set()
@@ -54,7 +54,7 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
     const nextNavigableIndex: Map<string, number> = new Map()
     const nextVisibleGroups: Set<string> = new Set()
 
-    if (filter === 'none' || search === '') {
+    if (filter === "none" || search === "") {
       for (const item of items.values()) {
         item.score = 1
         nextFilteredOrder.push(item.value)
@@ -66,7 +66,7 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
         }
       }
     } else {
-      const normalizedSearch = isBuiltInFilter(filter) ? normalize(search) : ''
+      const normalizedSearch = isBuiltInFilter(filter) ? normalize(search) : ""
       const visible: ItemData[] = []
 
       for (const item of items.values()) {
@@ -119,7 +119,7 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
     // Skip during initial recompute (respect options.initialValue).
     // Skip if user has never made a selection (initial mount has no highlight).
     if (initialized && hasBeenSelected && !navigableIndex.has(value)) {
-      const next = navigableOrder[0] ?? ''
+      const next = navigableOrder[0] ?? ""
       if (next !== value) {
         value = next
         // Notify synchronously — the caller (e.g. setSearch, registerItem) will call
@@ -143,7 +143,7 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
   })
 
   const registerItem = (input: ItemInput): (() => void) => {
-    if (typeof input.value !== 'string') {
+    if (typeof input.value !== "string") {
       throw new TypeError(`command-palette: item value must be a string, got ${typeof input.value}`)
     }
     if (isDev && items.has(input.value)) {
@@ -171,8 +171,8 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
   }
 
   const registerGroup = (input: GroupInput): (() => void) => {
-    if (typeof input.id !== 'string') {
-      throw new TypeError('command-palette: group id must be a string')
+    if (typeof input.id !== "string") {
+      throw new TypeError("command-palette: group id must be a string")
     }
     if (isDev && groups.has(input.id)) {
       console.warn(`command-palette: duplicate group id "${input.id}". Last registration wins.`)
@@ -190,30 +190,30 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
     }
   }
 
-  const updateItem = (itemValue: string, patch: Partial<Omit<ItemInput, 'value'>>): void => {
+  const updateItem = (itemValue: string, patch: Partial<Omit<ItemInput, "value">>): void => {
     const existing = items.get(itemValue)
     if (!existing) return
     let changed = false
     const next = { ...existing }
 
-    if ('keywords' in patch && !Object.is(existing.keywords, patch.keywords)) {
+    if ("keywords" in patch && !Object.is(existing.keywords, patch.keywords)) {
       next.keywords = patch.keywords
       preparedScoreHaystacks.delete(itemValue)
       changed = true
     }
-    if ('groupId' in patch && !Object.is(existing.groupId, patch.groupId)) {
+    if ("groupId" in patch && !Object.is(existing.groupId, patch.groupId)) {
       next.groupId = patch.groupId
       changed = true
     }
-    if ('disabled' in patch && !Object.is(existing.disabled, patch.disabled)) {
+    if ("disabled" in patch && !Object.is(existing.disabled, patch.disabled)) {
       next.disabled = patch.disabled
       changed = true
     }
-    if ('forceMount' in patch && !Object.is(existing.forceMount, patch.forceMount)) {
+    if ("forceMount" in patch && !Object.is(existing.forceMount, patch.forceMount)) {
       next.forceMount = patch.forceMount
       changed = true
     }
-    if ('onSelect' in patch && !Object.is(existing.onSelect, patch.onSelect)) {
+    if ("onSelect" in patch && !Object.is(existing.onSelect, patch.onSelect)) {
       next.onSelect = patch.onSelect
       changed = true
     }
@@ -229,16 +229,16 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
     patch: Partial<
       Pick<
         CommandStoreOptions,
-        'filter' | 'loop' | 'selectOnHover' | 'onSearchChange' | 'onValueChange'
+        "filter" | "loop" | "selectOnHover" | "onSearchChange" | "onValueChange"
       >
     >,
   ): void => {
-    const nextFilter = 'filter' in patch ? (patch.filter ?? DEFAULT_FILTER) : filter
-    const nextLoop = 'loop' in patch ? (patch.loop ?? false) : loop
+    const nextFilter = "filter" in patch ? (patch.filter ?? DEFAULT_FILTER) : filter
+    const nextLoop = "loop" in patch ? (patch.loop ?? false) : loop
     const nextSelectOnHover =
-      'selectOnHover' in patch ? (patch.selectOnHover ?? true) : selectOnHover
-    const nextOnValueChange = 'onValueChange' in patch ? patch.onValueChange : onValueChange
-    const nextOnSearchChange = 'onSearchChange' in patch ? patch.onSearchChange : onSearchChange
+      "selectOnHover" in patch ? (patch.selectOnHover ?? true) : selectOnHover
+    const nextOnValueChange = "onValueChange" in patch ? patch.onValueChange : onValueChange
+    const nextOnSearchChange = "onSearchChange" in patch ? patch.onSearchChange : onSearchChange
 
     const needsRecompute = nextFilter !== filter
     const needsNotify = needsRecompute || nextSelectOnHover !== selectOnHover
@@ -290,7 +290,7 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
 
   const setValue = (next: string): void => {
     if (next === value) return
-    if (next !== '') hasBeenSelected = true
+    if (next !== "") hasBeenSelected = true
     value = next
     onValueChange?.(value)
     notify()
@@ -355,7 +355,7 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
   }
 
   const triggerSelect = (event?: Event): void => {
-    if (value === '') return
+    if (value === "") return
     const item = items.get(value)
     if (!item || item.disabled) return
     item.onSelect?.(value, event)

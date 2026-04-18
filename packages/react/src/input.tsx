@@ -1,9 +1,9 @@
-import { type ChangeEvent, type CompositionEvent, type Ref, useRef } from 'react'
-import { useCommandSlice, useCommandStore } from './context'
+import { type ChangeEvent, type CompositionEvent, type JSX, type Ref, useRef } from "react"
+import { useCommandSlice, useCommandStore } from "./context"
 
 export type CommandInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
-  'value' | 'onChange'
+  "value" | "onChange"
 > & {
   ref?: Ref<HTMLInputElement>
   /** Override the displayed value. If omitted, the store's search is used. */
@@ -19,11 +19,11 @@ export const CommandInput = ({
   onCompositionStart,
   onCompositionEnd,
   ...rest
-}: CommandInputProps) => {
+}: CommandInputProps): JSX.Element => {
   const store = useCommandStore()
   const search = useCommandSlice((s) => s.search)
   const hasVisibleItems = useCommandSlice((s) => s.filteredOrder.length > 0)
-  const pendingValueRef = useRef<string>('')
+  const pendingValueRef = useRef<string>("")
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     if (store.getState().isComposing) {
@@ -46,7 +46,7 @@ export const CommandInput = ({
     const finalValue = target.value || pendingValueRef.current
     store.setSearch(finalValue)
     onValueChange?.(finalValue)
-    pendingValueRef.current = ''
+    pendingValueRef.current = ""
     onCompositionEnd?.(e)
   }
 

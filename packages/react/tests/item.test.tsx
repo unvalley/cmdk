@@ -1,19 +1,19 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
-import { Command } from '../src/command'
-import { CommandItem } from '../src/item'
+import { act, fireEvent, render, screen } from "@testing-library/react"
+import { describe, expect, it, vi } from "vitest"
+import { Command } from "../src/command"
+import { CommandItem } from "../src/item"
 
-describe('<Command.Item>', () => {
-  it('renders with command-palette-item attribute', () => {
+describe("<Command.Item>", () => {
+  it("renders with command-palette-item attribute", () => {
     render(
       <Command>
         <CommandItem value="apple">Apple</CommandItem>
       </Command>,
     )
-    expect(screen.getByText('Apple').closest('[command-palette-item]')).toBeInTheDocument()
+    expect(screen.getByText("Apple").closest("[command-palette-item]")).toBeInTheDocument()
   })
 
-  it('fires onSelect when clicked', () => {
+  it("fires onSelect when clicked", () => {
     const onSelect = vi.fn()
     render(
       <Command>
@@ -22,11 +22,11 @@ describe('<Command.Item>', () => {
         </CommandItem>
       </Command>,
     )
-    fireEvent.click(screen.getByText('Apple'))
-    expect(onSelect).toHaveBeenCalledWith('apple', expect.any(Object))
+    fireEvent.click(screen.getByText("Apple"))
+    expect(onSelect).toHaveBeenCalledWith("apple", expect.any(Object))
   })
 
-  it('passes the click event to onSelect (#156)', () => {
+  it("passes the click event to onSelect (#156)", () => {
     const onSelect = vi.fn()
     render(
       <Command>
@@ -35,24 +35,24 @@ describe('<Command.Item>', () => {
         </CommandItem>
       </Command>,
     )
-    fireEvent.click(screen.getByText('Apple'))
+    fireEvent.click(screen.getByText("Apple"))
     expect(onSelect.mock.calls[0]?.[1]).toBeInstanceOf(Event)
   })
 
-  it('sets data-selected on the highlighted item', () => {
+  it("sets data-selected on the highlighted item", () => {
     render(
       <Command value="apple">
         <CommandItem value="apple">Apple</CommandItem>
         <CommandItem value="banana">Banana</CommandItem>
       </Command>,
     )
-    const apple = screen.getByText('Apple').closest('[command-palette-item]')
-    const banana = screen.getByText('Banana').closest('[command-palette-item]')
-    expect(apple?.getAttribute('data-selected')).toBe('true')
-    expect(banana?.getAttribute('data-selected')).toBe(null)
+    const apple = screen.getByText("Apple").closest("[command-palette-item]")
+    const banana = screen.getByText("Banana").closest("[command-palette-item]")
+    expect(apple?.getAttribute("data-selected")).toBe("true")
+    expect(banana?.getAttribute("data-selected")).toBe(null)
   })
 
-  it('sets data-disabled on disabled items', async () => {
+  it("sets data-disabled on disabled items", async () => {
     render(
       <Command>
         <CommandItem value="apple" disabled>
@@ -61,29 +61,29 @@ describe('<Command.Item>', () => {
       </Command>,
     )
     await act(async () => {})
-    const apple = screen.getByText('Apple').closest('[command-palette-item]')
-    expect(apple?.getAttribute('data-disabled')).toBe('true')
+    const apple = screen.getByText("Apple").closest("[command-palette-item]")
+    expect(apple?.getAttribute("data-disabled")).toBe("true")
   })
 
-  it('hides item when filtered out', () => {
+  it("hides item when filtered out", () => {
     const { container } = render(
       <Command search="xyz">
         <CommandItem value="apple">Apple</CommandItem>
       </Command>,
     )
-    expect(container.querySelector('[command-palette-item]')).not.toBeInTheDocument()
+    expect(container.querySelector("[command-palette-item]")).not.toBeInTheDocument()
   })
 
-  it('renders item with empty-string value (#357)', () => {
+  it("renders item with empty-string value (#357)", () => {
     render(
       <Command>
         <CommandItem value="">All</CommandItem>
       </Command>,
     )
-    expect(screen.getByText('All').closest('[command-palette-item]')).toBeInTheDocument()
+    expect(screen.getByText("All").closest("[command-palette-item]")).toBeInTheDocument()
   })
 
-  it('renders item with special chars in value without crashing (#387)', () => {
+  it("renders item with special chars in value without crashing (#387)", () => {
     expect(() =>
       render(
         <Command>
@@ -93,33 +93,33 @@ describe('<Command.Item>', () => {
     ).not.toThrow()
   })
 
-  it('selectOnHover updates value on pointer move by default', () => {
+  it("selectOnHover updates value on pointer move by default", () => {
     render(
       <Command>
         <CommandItem value="a">A</CommandItem>
         <CommandItem value="b">B</CommandItem>
       </Command>,
     )
-    fireEvent.pointerMove(screen.getByText('B'))
+    fireEvent.pointerMove(screen.getByText("B"))
     expect(
-      screen.getByText('B').closest('[command-palette-item]')?.getAttribute('data-selected'),
-    ).toBe('true')
+      screen.getByText("B").closest("[command-palette-item]")?.getAttribute("data-selected"),
+    ).toBe("true")
   })
 
-  it('selectOnHover={false} does not update value on pointer move (#49)', () => {
+  it("selectOnHover={false} does not update value on pointer move (#49)", () => {
     render(
       <Command selectOnHover={false}>
         <CommandItem value="a">A</CommandItem>
         <CommandItem value="b">B</CommandItem>
       </Command>,
     )
-    fireEvent.pointerMove(screen.getByText('B'))
+    fireEvent.pointerMove(screen.getByText("B"))
     expect(
-      screen.getByText('B').closest('[command-palette-item]')?.getAttribute('data-selected'),
-    ).not.toBe('true')
+      screen.getByText("B").closest("[command-palette-item]")?.getAttribute("data-selected"),
+    ).not.toBe("true")
   })
 
-  it('updates selectOnHover after rerender', () => {
+  it("updates selectOnHover after rerender", () => {
     const { rerender } = render(
       <Command selectOnHover={false}>
         <CommandItem value="a">A</CommandItem>
@@ -127,10 +127,10 @@ describe('<Command.Item>', () => {
       </Command>,
     )
 
-    fireEvent.pointerMove(screen.getByText('B'))
+    fireEvent.pointerMove(screen.getByText("B"))
     expect(
-      screen.getByText('B').closest('[command-palette-item]')?.getAttribute('data-selected'),
-    ).not.toBe('true')
+      screen.getByText("B").closest("[command-palette-item]")?.getAttribute("data-selected"),
+    ).not.toBe("true")
 
     rerender(
       <Command selectOnHover>
@@ -139,9 +139,9 @@ describe('<Command.Item>', () => {
       </Command>,
     )
 
-    fireEvent.pointerMove(screen.getByText('B'))
+    fireEvent.pointerMove(screen.getByText("B"))
     expect(
-      screen.getByText('B').closest('[command-palette-item]')?.getAttribute('data-selected'),
-    ).toBe('true')
+      screen.getByText("B").closest("[command-palette-item]")?.getAttribute("data-selected"),
+    ).toBe("true")
   })
 })

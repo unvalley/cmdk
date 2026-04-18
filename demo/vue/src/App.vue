@@ -8,8 +8,8 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@command-palette/vue'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+} from "@command-palette/vue"
+import { onBeforeUnmount, onMounted, ref } from "vue"
 
 type Action = {
   value: string
@@ -19,45 +19,45 @@ type Action = {
 }
 
 // biome-ignore lint/correctness/noUnusedVariables: referenced from the Vue template
-const frameworkLabel = '@command-palette/vue'
+const frameworkLabel = "@command-palette/vue"
 const open = ref(false)
 const log = ref<string[]>([])
 
 // biome-ignore lint/correctness/noUnusedVariables: referenced from the Vue template
 const navigation: readonly Action[] = [
-  { value: 'go-home', label: 'Go to Home', hint: 'G H' },
-  { value: 'go-projects', label: 'Go to Projects', hint: 'G P' },
-  { value: 'go-issues', label: 'Go to Issues', hint: 'G I', keywords: ['bugs', 'tasks'] },
-  { value: 'go-settings', label: 'Go to Settings', hint: 'G S', keywords: ['prefs'] },
+  { value: "go-home", label: "Go to Home", hint: "G H" },
+  { value: "go-projects", label: "Go to Projects", hint: "G P" },
+  { value: "go-issues", label: "Go to Issues", hint: "G I", keywords: ["bugs", "tasks"] },
+  { value: "go-settings", label: "Go to Settings", hint: "G S", keywords: ["prefs"] },
 ]
 
 // biome-ignore lint/correctness/noUnusedVariables: referenced from the Vue template
 const actions: readonly Action[] = [
-  { value: 'new-file', label: 'New file', hint: '⌘N', keywords: ['create'] },
-  { value: 'save', label: 'Save', hint: '⌘S' },
-  { value: 'duplicate', label: 'Duplicate', hint: '⌘D' },
-  { value: 'delete', label: 'Delete', keywords: ['remove', 'trash'] },
+  { value: "new-file", label: "New file", hint: "⌘N", keywords: ["create"] },
+  { value: "save", label: "Save", hint: "⌘S" },
+  { value: "duplicate", label: "Duplicate", hint: "⌘D" },
+  { value: "delete", label: "Delete", keywords: ["remove", "trash"] },
 ]
 
 // biome-ignore lint/correctness/noUnusedVariables: referenced from the Vue template
 const account: readonly Action[] = [
-  { value: 'profile', label: 'View profile', keywords: ['me', 'account'] },
-  { value: 'sign-out', label: 'Sign out', keywords: ['logout', 'exit'] },
+  { value: "profile", label: "View profile", keywords: ["me", "account"] },
+  { value: "sign-out", label: "Sign out", keywords: ["logout", "exit"] },
 ]
 
 const onKeydown = (event: KeyboardEvent): void => {
-  if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
+  if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
     event.preventDefault()
     open.value = !open.value
   }
 }
 
 onMounted(() => {
-  document.addEventListener('keydown', onKeydown)
+  document.addEventListener("keydown", onKeydown)
 })
 
 onBeforeUnmount(() => {
-  document.removeEventListener('keydown', onKeydown)
+  document.removeEventListener("keydown", onKeydown)
 })
 
 // biome-ignore lint/correctness/noUnusedVariables: referenced from the Vue template

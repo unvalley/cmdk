@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
@@ -18,12 +17,12 @@
     "verbatimModuleSyntax": true,
     "declaration": true,
     "declarationMap": true,
+    "isolatedDeclarations": true,
     "sourceMap": true,
-    "ignoreDeprecations": "6.0",
     "paths": {
-      "@command-palette/core": ["packages/core/src/index.ts"],
-      "@command-palette/react": ["packages/react/src/index.ts"],
-      "@command-palette/vue": ["packages/vue/src/index.ts"]
+      "@command-palette/core": ["./packages/core/src/index.ts"],
+      "@command-palette/react": ["./packages/react/src/index.ts"],
+      "@command-palette/vue": ["./packages/vue/src/index.ts"]
     }
   }
 }
