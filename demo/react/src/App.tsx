@@ -7,6 +7,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@command-palette/react"
+import type { JSX } from "react"
 import { useEffect, useState } from "react"
 
 type Action = {
@@ -35,7 +36,7 @@ const ACCOUNT: readonly Action[] = [
   { value: "sign-out", label: "Sign out", keywords: ["logout", "exit"] },
 ]
 
-export const App = () => {
+export const App = (): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [log, setLog] = useState<string[]>([])
 

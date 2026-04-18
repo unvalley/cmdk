@@ -5,11 +5,7 @@ export type CommandListProps = HTMLAttributes<HTMLDivElement> & {
   children?: ReactNode
 }
 
-export const CommandList = ({
-  ref,
-  children,
-  ...rest
-}: CommandListProps): JSX.Element => (
+export const CommandList = ({ ref, children, ...rest }: CommandListProps): JSX.Element => (
   <div ref={ref} command-palette-list="" role="listbox" {...rest}>
     {children}
   </div>

@@ -1,7 +1,6 @@
 import { type CommandFilter, createCommand } from "@command-palette/core"
 import {
   type DefineComponent,
-  type VNode,
   defineComponent,
   h,
   mergeProps,
@@ -9,6 +8,7 @@ import {
   onScopeDispose,
   provide,
   shallowRef,
+  type VNode,
   watch,
 } from "vue"
 import { CommandIdAllocatorKey, CommandStoreKey, CommandVersionKey } from "./context"

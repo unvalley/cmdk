@@ -1,7 +1,9 @@
 import react from "@vitejs/plugin-react"
-import { defineConfig } from "vite"
+import { defineConfig, type UserConfig } from "vite"
 
-export default defineConfig({
+const config: UserConfig = defineConfig({
   plugins: [react()],
   server: { port: 5173 },
 })
+
+export default config

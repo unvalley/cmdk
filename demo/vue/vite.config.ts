@@ -1,7 +1,9 @@
 import vue from "@vitejs/plugin-vue"
-import { defineConfig } from "vite"
+import { defineConfig, type UserConfig } from "vite"
 
-export default defineConfig({
+const config: UserConfig = defineConfig({
   plugins: [vue()],
   server: { port: 5174 },
 })
+
+export default config

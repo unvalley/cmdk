@@ -1,4 +1,12 @@
-import { type DefineComponent, defineComponent, h, mergeProps, provide, type VNode, watch } from "vue"
+import {
+  type DefineComponent,
+  defineComponent,
+  h,
+  mergeProps,
+  provide,
+  type VNode,
+  watch,
+} from "vue"
 import { GroupIdKey, useCommandId, useCommandSlice, useCommandStore } from "./context"
 
 type CommandGroupPropsOptions = {

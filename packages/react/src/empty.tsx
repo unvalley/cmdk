@@ -6,11 +6,7 @@ export type CommandEmptyProps = HTMLAttributes<HTMLDivElement> & {
   children?: ReactNode
 }
 
-export const CommandEmpty = ({
-  ref,
-  children,
-  ...rest
-}: CommandEmptyProps): JSX.Element | null => {
+export const CommandEmpty = ({ ref, children, ...rest }: CommandEmptyProps): JSX.Element | null => {
   const isEmpty = useCommandSlice((s) => s.filteredOrder.length === 0)
   if (!isEmpty) return null
   return (

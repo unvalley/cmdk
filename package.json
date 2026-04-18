@@ -4,12 +4,11 @@
   "version": "0.0.0",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm -r --filter='./demo/*' run build",
+    "check": "biome check && pnpm typecheck && pnpm test && pnpm build && pnpm -r --filter='./demo/*' run build",
     "build": "pnpm -r --filter='./packages/*' run build",
     "test": "pnpm -r --filter='./packages/*' run test",
     "typecheck": "pnpm -r --filter='./packages/*' run typecheck",
-    "lint": "biome check .",
-    "format": "biome format --write ."
+    "check:write": "biome check --write"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",
