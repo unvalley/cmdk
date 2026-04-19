@@ -240,22 +240,29 @@ const withoutMapEntry = <K, V>(map: ReadonlyMap<K, V>, key: K): Map<K, V> => {
 
 const resolveSelectedValue = ({
   value,
+  hasValue,
   navigableIndex,
   navigableOrder,
   initialized,
   hasBeenSelected,
 }: {
   value: string
+  hasValue: boolean
   navigableIndex: ReadonlyMap<string, number>
   navigableOrder: readonly string[]
   initialized: boolean
   hasBeenSelected: boolean
-}): string => {
-  if (!initialized || !hasBeenSelected || navigableIndex.has(value)) {
-    return value
+}): { value: string; hasValue: boolean } => {
+  if (!initialized || !hasBeenSelected || (hasValue && navigableIndex.has(value))) {
+    return { value, hasValue }
   }
 
-  return navigableOrder[0] ?? ""
+  const nextValue = navigableOrder[0]
+  if (nextValue === undefined) {
+    return { value: "", hasValue: false }
+  }
+
+  return { value: nextValue, hasValue: true }
 }
 
 export const createCommand = (options: CommandStoreOptions = {}): CommandStore => {
@@ -265,10 +272,12 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
   let onValueChange = options.onValueChange
   let onSearchChange = options.onSearchChange
 
+  const initialHasValue = options.initialValue !== undefined
   let nextOrder = 0
   let state: CommandState = {
     search: options.initialSearch ?? "",
     value: options.initialValue ?? "",
+    hasValue: initialHasValue,
     items: new Map(),
     groups: new Map(),
     filteredOrder: [],
@@ -281,7 +290,7 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
   let navigableIndex = new Map<string, number>()
   let initialized = false
   let initialState: CommandState
-  let hasBeenSelected = state.value !== "" // true if controlled with non-empty initial
+  let hasBeenSelected = initialHasValue
 
   const preparedScoreHaystacks = new Map<string, PreparedScoreHaystack>()
 
@@ -313,8 +322,9 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
     nextNavigableIndex: Map<string, number>
     valueChanged: boolean
   } => {
-    const nextValue = resolveSelectedValue({
+    const resolvedSelection = resolveSelectedValue({
       value: baseState.value,
+      hasValue: baseState.hasValue,
       navigableIndex: derivedState.navigableIndex,
       navigableOrder: derivedState.navigableOrder,
       initialized,
@@ -324,7 +334,8 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
     return {
       nextState: {
         ...baseState,
-        value: nextValue,
+        value: resolvedSelection.value,
+        hasValue: resolvedSelection.hasValue,
         items: derivedState.items,
         filteredOrder: derivedState.filteredOrder,
         visibleSet: derivedState.visibleSet,
@@ -332,7 +343,9 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
         visibleGroups: derivedState.visibleGroups,
       },
       nextNavigableIndex: derivedState.navigableIndex,
-      valueChanged: nextValue !== baseState.value,
+      valueChanged:
+        resolvedSelection.value !== baseState.value ||
+        resolvedSelection.hasValue !== baseState.hasValue,
     }
   }
 
@@ -544,15 +557,18 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
   }
 
   const setValue = (next: string): void => {
-    if (next === state.value) return
-    if (next !== "") hasBeenSelected = true
+    if (state.hasValue && next === state.value) return
+    hasBeenSelected = true
     commit({
-      nextState: { ...state, value: next },
+      nextState: { ...state, value: next, hasValue: true },
       notifyValueChange: true,
     })
   }
 
-  const currentIndex = (): number => navigableIndex.get(state.value) ?? -1
+  const currentIndex = (): number => {
+    if (!state.hasValue) return -1
+    return navigableIndex.get(state.value) ?? -1
+  }
 
   const selectFirst = (): void => {
     const first = getBoundaryValue(state.navigableOrder, "first")
@@ -582,7 +598,7 @@ export const createCommand = (options: CommandStoreOptions = {}): CommandStore =
   }
 
   const triggerSelect = (event?: Event): void => {
-    if (state.value === "") return
+    if (!state.hasValue) return
     const item = state.items.get(state.value)
     if (!item || item.disabled) return
     item.onSelect?.(state.value, event)

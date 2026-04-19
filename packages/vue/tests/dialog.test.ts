@@ -126,6 +126,51 @@ describe("<CommandDialog>", () => {
     expect(screen.getByPlaceholderText("Search")).toHaveValue("hello")
   })
 
+  it("restores defaultSearch when an uncontrolled dialog closes", async () => {
+    const Wrapper = defineComponent({
+      setup() {
+        const open = ref(true)
+        return () => [
+          h(
+            "button",
+            {
+              type: "button",
+              onClick: () => {
+                open.value = true
+              },
+            },
+            "open",
+          ),
+          h(
+            CommandDialog,
+            {
+              open: open.value,
+              defaultSearch: "hello",
+              label: "menu",
+              "onUpdate:open": (nextOpen: boolean) => {
+                open.value = nextOpen
+              },
+            },
+            {
+              default: () => h(CommandInput, { placeholder: "Search" }),
+            },
+          ),
+        ]
+      },
+    })
+
+    render(Wrapper)
+    const input = screen.getByPlaceholderText("Search") as HTMLInputElement
+    expect(input.value).toBe("hello")
+    await fireEvent.update(input, "world")
+    expect(input.value).toBe("world")
+    fireEvent.keyDown(input, { key: "Escape" })
+    await nextTick()
+    fireEvent.click(screen.getByText("open"))
+    await nextTick()
+    expect((screen.getByPlaceholderText("Search") as HTMLInputElement).value).toBe("hello")
+  })
+
   it("does not clear search on close when search is controlled", async () => {
     const Wrapper = defineComponent({
       setup() {

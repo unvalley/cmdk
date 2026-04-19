@@ -3,6 +3,13 @@ import type { Context } from "react"
 import { createContext, useCallback, useContext, useSyncExternalStore } from "react"
 
 export const CommandContext: Context<CommandStore | null> = createContext<CommandStore | null>(null)
+export const CommandA11yContext: Context<{
+  getItemId: (value: string) => string
+  listId: string
+} | null> = createContext<{
+  getItemId: (value: string) => string
+  listId: string
+} | null>(null)
 
 /**
  * When a <CommandItem> is rendered inside a <CommandGroup>, the group's
@@ -17,6 +24,14 @@ export const useCommandStore = (): CommandStore => {
     throw new Error("command-palette: component must be rendered inside <Command>")
   }
   return store
+}
+
+export const useCommandA11y = (): { getItemId: (value: string) => string; listId: string } => {
+  const a11y = useContext(CommandA11yContext)
+  if (!a11y) {
+    throw new Error("command-palette: component must be rendered inside <Command>")
+  }
+  return a11y
 }
 
 /**

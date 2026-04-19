@@ -1,6 +1,6 @@
 # command-palette
 
-Library-agnostic command palette primitives. Currently support React.
+Library-agnostic command palette primitives for React and Vue.
 
 ## Packages
 

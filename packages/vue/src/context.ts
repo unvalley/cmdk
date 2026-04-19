@@ -5,6 +5,10 @@ export const CommandStoreKey: InjectionKey<CommandStore> = Symbol("command-palet
 export const CommandVersionKey: InjectionKey<ShallowRef<number>> = Symbol(
   "command-palette-command-version",
 )
+export const CommandA11yKey: InjectionKey<{
+  getItemId: (value: string) => string
+  listId: string
+}> = Symbol("command-palette-command-a11y")
 export const CommandIdAllocatorKey: InjectionKey<(prefix: string) => string> = Symbol(
   "command-palette-command-id-allocator",
 )
@@ -38,4 +42,13 @@ export const useCommandId = (prefix: string): string => {
   }
 
   return allocateId(prefix)
+}
+
+export const useCommandA11y = (): { getItemId: (value: string) => string; listId: string } => {
+  const a11y = inject(CommandA11yKey, null)
+  if (!a11y) {
+    throw new Error("command-palette: component must be rendered inside <Command>")
+  }
+
+  return a11y
 }

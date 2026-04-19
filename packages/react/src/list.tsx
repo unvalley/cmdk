@@ -1,4 +1,5 @@
 import type { HTMLAttributes, JSX, ReactNode, Ref } from "react"
+import { useCommandA11y } from "./context"
 
 /**
  * Props for the listbox container that wraps command items.
@@ -13,8 +14,12 @@ export type CommandListProps = HTMLAttributes<HTMLDivElement> & {
 }
 
 /** Renders the `listbox` container that owns visible command items. */
-export const CommandList = ({ ref, children, ...rest }: CommandListProps): JSX.Element => (
-  <div ref={ref} command-palette-list="" role="listbox" {...rest}>
-    {children}
-  </div>
-)
+export const CommandList = ({ ref, children, ...rest }: CommandListProps): JSX.Element => {
+  const { listId } = useCommandA11y()
+
+  return (
+    <div ref={ref} id={listId} command-palette-list="" role="listbox" {...rest}>
+      {children}
+    </div>
+  )
+}

@@ -189,6 +189,90 @@ describe("<CommandInput>", () => {
     expect(screen.getByText("Banana")).toBeInTheDocument()
   })
 
+  it("wires combobox accessibility attributes to the active option", async () => {
+    render(Command, {
+      slots: commandSlots([
+        h(CommandInput, { placeholder: "Search" }),
+        h(
+          CommandList,
+          {},
+          {
+            default: () => [itemNode("apple", "Apple"), itemNode("banana", "Banana")],
+          },
+        ),
+      ]),
+    })
+
+    const input = screen.getByPlaceholderText("Search")
+    const list = document.querySelector("[command-palette-list]")
+    expect(list?.id).toBeTruthy()
+    expect(input).toHaveAttribute("aria-controls", list?.id)
+
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    await nextTick()
+
+    const activeItem = screen.getByText("Apple").closest("[command-palette-item]")
+    expect(activeItem?.id).toBeTruthy()
+    expect(input).toHaveAttribute("aria-activedescendant", activeItem?.id)
+  })
+
+  it("uses distinct option ids for empty-string and literal 'empty' values", async () => {
+    render(Command, {
+      slots: commandSlots([
+        h(CommandInput, { placeholder: "Search" }),
+        h(
+          CommandList,
+          {},
+          {
+            default: () => [itemNode("", "Empty value"), itemNode("empty", "Literal empty")],
+          },
+        ),
+      ]),
+    })
+
+    const input = screen.getByPlaceholderText("Search")
+
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    await nextTick()
+    const emptyValueId = input.getAttribute("aria-activedescendant")
+
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    await nextTick()
+    const literalEmptyId = input.getAttribute("aria-activedescendant")
+
+    expect(emptyValueId).toBeTruthy()
+    expect(literalEmptyId).toBeTruthy()
+    expect(emptyValueId).not.toBe(literalEmptyId)
+  })
+
+  it("uses unique list ids across multiple Vue command roots", () => {
+    render(
+      defineComponent({
+        setup() {
+          return () =>
+            h("div", [
+              h(
+                Command,
+                {},
+                { default: () => [h(CommandInput, { placeholder: "Search 1" }), h(CommandList)] },
+              ),
+              h(
+                Command,
+                {},
+                { default: () => [h(CommandInput, { placeholder: "Search 2" }), h(CommandList)] },
+              ),
+            ])
+        },
+      }),
+    )
+
+    const lists = Array.from(document.querySelectorAll("[command-palette-list]"))
+    expect(lists).toHaveLength(2)
+    expect(lists[0]?.id).toBeTruthy()
+    expect(lists[1]?.id).toBeTruthy()
+    expect(lists[0]?.id).not.toBe(lists[1]?.id)
+  })
+
   it("emits update:modelValue when keyboard selection changes", () => {
     const onValueChange = vi.fn()
     render(Command, {

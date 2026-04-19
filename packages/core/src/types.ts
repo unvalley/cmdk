@@ -56,8 +56,10 @@ export type CommandStoreOptions = {
 
 export type CommandState = {
   search: string
-  /** Currently highlighted item's value. '' if none. */
+  /** Currently highlighted item's value. Can be ''. */
   value: string
+  /** Whether an item is currently highlighted. Distinguishes "no selection" from value ''. */
+  hasValue: boolean
   /** Registered items. Treat as read-only and update through store methods only. */
   items: ReadonlyMap<string, ItemData>
   /** Registered groups. Treat as read-only and update through store methods only. */

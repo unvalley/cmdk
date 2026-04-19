@@ -11,8 +11,16 @@ import {
   type VNode,
   watch,
 } from "vue"
-import { CommandIdAllocatorKey, CommandStoreKey, CommandVersionKey } from "./context"
+import { createCommandItemId, createCommandListId } from "./a11y"
+import {
+  CommandA11yKey,
+  CommandIdAllocatorKey,
+  CommandStoreKey,
+  CommandVersionKey,
+} from "./context"
 import { commandProps, type CommandProps as SharedCommandProps } from "./shared"
+
+let nextCommandRootId = 0
 
 /**
  * Props for the root Vue command palette container.
@@ -36,6 +44,7 @@ export const Command: DefineComponent<CommandProps> = defineComponent({
   },
   setup(props, { attrs, emit, slots }): () => VNode {
     let nextId = 0
+    const commandId = `command-palette-vue-${++nextCommandRootId}`
     const store = createCommand({
       filter: props.filter,
       initialSearch: props.search ?? props.defaultSearch,
@@ -54,7 +63,11 @@ export const Command: DefineComponent<CommandProps> = defineComponent({
     onScopeDispose(unsubscribe)
     provide(CommandStoreKey, store)
     provide(CommandVersionKey, version)
-    provide(CommandIdAllocatorKey, (prefix: string) => `command-palette-vue-${prefix}-${++nextId}`)
+    provide(CommandA11yKey, {
+      getItemId: (value: string) => createCommandItemId(commandId, value),
+      listId: createCommandListId(commandId),
+    })
+    provide(CommandIdAllocatorKey, (prefix: string) => `${commandId}-${prefix}-${++nextId}`)
 
     onMounted(() => {
       if (props.modelValue !== undefined) {

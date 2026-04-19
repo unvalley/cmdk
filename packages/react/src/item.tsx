@@ -6,10 +6,9 @@ import {
   type Ref,
   useContext,
   useEffect,
-  useId,
   useRef,
 } from "react"
-import { GroupContext, useCommandSlice, useCommandStore } from "./context"
+import { GroupContext, useCommandA11y, useCommandSlice, useCommandStore } from "./context"
 
 /**
  * Props for a selectable command option.
@@ -53,7 +52,8 @@ export const CommandItem = ({
   ...rest
 }: CommandItemProps): JSX.Element | null => {
   const store = useCommandStore()
-  const id = useId()
+  const { getItemId } = useCommandA11y()
+  const id = getItemId(value)
   // Prop wins; otherwise inherit from the nearest <CommandGroup>.
   const inheritedGroupId = useContext(GroupContext)
   const groupId = groupIdProp ?? inheritedGroupId ?? undefined
@@ -82,7 +82,7 @@ export const CommandItem = ({
   }, [store, value, keywords, disabled, forceMount, groupId])
 
   const isVisible = useCommandSlice((s) => s.visibleSet.has(value))
-  const isSelected = useCommandSlice((s) => s.value === value)
+  const isSelected = useCommandSlice((s) => s.hasValue && s.value === value)
   const selectOnHover = useCommandSlice((s) => s.selectOnHover)
 
   if (!isVisible) return null
