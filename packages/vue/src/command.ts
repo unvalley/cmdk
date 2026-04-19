@@ -11,7 +11,6 @@ import {
   type VNode,
   watch,
 } from "vue"
-import { createCommandItemId, createCommandListId } from "./a11y"
 import {
   CommandA11yKey,
   CommandIdAllocatorKey,
@@ -151,3 +150,12 @@ export const Command: DefineComponent<CommandProps> = defineComponent({
       )
   },
 })
+
+const encodeItemValue = (value: string): string => {
+  return `${value.length}:${encodeURIComponent(value)}`
+}
+
+const createCommandListId = (baseId: string): string => `${baseId}-list`
+
+const createCommandItemId = (baseId: string, value: string): string =>
+  `${baseId}-item-${encodeItemValue(value)}`

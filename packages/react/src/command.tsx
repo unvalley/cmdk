@@ -1,6 +1,5 @@
 import { type CommandFilter, type CommandStore, createCommand } from "@command-palette/core"
 import { type KeyboardEvent, type ReactNode, useEffect, useId, useMemo, useRef } from "react"
-import { createCommandItemId, createCommandListId } from "./a11y"
 import { CommandA11yContext, CommandContext } from "./context"
 
 /**
@@ -126,8 +125,8 @@ export const Command = ({ label, className, children, ...options }: CommandProps
     <CommandContext.Provider value={store}>
       <CommandA11yContext.Provider
         value={{
-          getItemId: (value) => createCommandItemId(baseId, value),
-          listId: createCommandListId(baseId),
+          getItemId: (value) => `${baseId}-item-${encodeItemValue(value)}`,
+          listId: `${baseId}-list`,
         }}
       >
         <div
@@ -143,3 +142,5 @@ export const Command = ({ label, className, children, ...options }: CommandProps
     </CommandContext.Provider>
   )
 }
+
+const encodeItemValue = (value: string): string => `${value.length}:${encodeURIComponent(value)}`

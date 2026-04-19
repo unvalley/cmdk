@@ -48,6 +48,5 @@ export const useCommandSlice = <T>(selector: (state: CommandState) => T): T => {
     [store, selector],
   )
   const getSnapshot = useCallback(() => selector(store.getState()), [store, selector])
-
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 }
