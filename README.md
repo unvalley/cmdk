@@ -1,6 +1,6 @@
-# command-palette
+# @command-palette
 
-Library-agnostic command palette primitives for React and Vue.
+Library-agnostic command palette primitives.
 
 ## Packages
 
@@ -14,10 +14,14 @@ Library-agnostic command palette primitives for React and Vue.
 ## Install
 
 ```bash
-pnpm add @command-palette/react react react-dom
-# or
-pnpm add @command-palette/vue vue
+# React
+pnpm add @command-palette/react
+
+# Vue
+pnpm add @command-palette/vue
 ```
+
+Other libraries are incoming.
 
 ## Docs
 
