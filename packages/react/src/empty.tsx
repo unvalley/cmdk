@@ -18,7 +18,7 @@ export const CommandEmpty = ({ ref, children, ...rest }: CommandEmptyProps): JSX
   const isEmpty = useCommandSlice((s) => s.filteredOrder.length === 0)
   if (!isEmpty) return null
   return (
-    <div ref={ref} command-palette-empty="" role="presentation" {...rest}>
+    <div command-palette-empty="" ref={ref} role="presentation" {...rest}>
       {children}
     </div>
   )

@@ -6,6 +6,7 @@
   "scripts": {
     "check": "biome check && pnpm typecheck && pnpm test && pnpm build && pnpm check:size && pnpm -r --filter='./demo/*' run build",
     "build": "pnpm -r --filter='./packages/*' run build",
+    "demo": "pnpm -r --parallel --filter='./demo/*' run dev",
     "test": "pnpm -r --filter='./packages/*' run test",
     "typecheck": "pnpm -r --filter='./packages/*' run typecheck",
     "check:size": "node scripts/check-package-size.mts",

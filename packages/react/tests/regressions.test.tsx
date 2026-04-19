@@ -20,8 +20,8 @@ describe("regression: per-item render count", () => {
     render(
       <Command>
         <CommandList>
-          <CountingItem value="a" label="a" />
-          <CountingItem value="b" label="b" />
+          <CountingItem label="a" value="a" />
+          <CountingItem label="b" value="b" />
         </CommandList>
       </Command>,
     )

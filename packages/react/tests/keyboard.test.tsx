@@ -63,7 +63,7 @@ describe("keyboard navigation", () => {
       <Command>
         <CommandInput placeholder="Search" />
         <CommandList>
-          <CommandItem value="a" onSelect={onSelect}>
+          <CommandItem onSelect={onSelect} value="a">
             A
           </CommandItem>
         </CommandList>

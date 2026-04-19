@@ -66,7 +66,7 @@ export const App = (): JSX.Element => {
     return () => document.removeEventListener("keydown", onKey)
   }, [])
 
-  const run = (value: string) => {
+  const run = (_value: string) => {
     setOpen(false)
   }
 
@@ -86,9 +86,9 @@ export const App = (): JSX.Element => {
       <section className="pt-2">
         <div className="flex flex-wrap items-center gap-3">
           <button
-            type="button"
             className="inline-flex items-center justify-center rounded-full bg-[#00d8ff] px-5 py-3 text-sm font-medium text-[#003847] transition hover:bg-[#33e1ff]"
             onClick={() => setOpen(true)}
+            type="button"
           >
             Open command menu
           </button>
@@ -105,11 +105,11 @@ export const App = (): JSX.Element => {
       </section>
 
       <CommandDialog
-        open={open}
-        onOpenChange={setOpen}
+        dialogClassName={commandDialogClassName}
         label="Global Command Palette"
         loop
-        dialogClassName={commandDialogClassName}
+        onOpenChange={setOpen}
+        open={open}
       >
         <CommandInput className={commandInputClassName} placeholder="What do you want to do?" />
         <CommandList className={commandListClassName}>
@@ -119,11 +119,11 @@ export const App = (): JSX.Element => {
           <CommandGroup className={commandGroupClassName} heading="Navigation">
             {NAVIGATION.map((action) => (
               <CommandItem
-                key={action.value}
                 className={commandItemClassName}
-                value={action.value}
+                key={action.value}
                 keywords={action.keywords}
                 onSelect={run}
+                value={action.value}
               >
                 <span>{action.label}</span>
                 {action.hint && <span className={hintClassName}>{action.hint}</span>}
@@ -134,11 +134,11 @@ export const App = (): JSX.Element => {
           <CommandGroup className={commandGroupClassName} heading="Actions">
             {ACTIONS.map((action) => (
               <CommandItem
-                key={action.value}
                 className={commandItemClassName}
-                value={action.value}
+                key={action.value}
                 keywords={action.keywords}
                 onSelect={run}
+                value={action.value}
               >
                 <span>{action.label}</span>
                 {action.hint && <span className={hintClassName}>{action.hint}</span>}
@@ -149,11 +149,11 @@ export const App = (): JSX.Element => {
           <CommandGroup className={commandGroupClassName} heading="Account">
             {ACCOUNT.map((action) => (
               <CommandItem
-                key={action.value}
                 className={commandItemClassName}
-                value={action.value}
+                key={action.value}
                 keywords={action.keywords}
                 onSelect={run}
+                value={action.value}
               >
                 <span>{action.label}</span>
               </CommandItem>

@@ -82,21 +82,21 @@ export const CommandInput = ({
 
   return (
     <input
-      ref={ref}
-      command-palette-input=""
-      role="combobox"
+      aria-activedescendant={activeDescendant}
       aria-autocomplete="list"
       aria-controls={listId}
-      aria-activedescendant={activeDescendant}
       aria-expanded={hasVisibleItems}
       autoComplete="off"
       autoCorrect="off"
+      command-palette-input=""
+      ref={ref}
+      role="combobox"
       spellCheck={false}
       {...rest}
-      value={value ?? search}
       onChange={handleChange}
-      onCompositionStart={handleCompositionStart}
       onCompositionEnd={handleCompositionEnd}
+      onCompositionStart={handleCompositionStart}
+      value={value ?? search}
     />
   )
 }

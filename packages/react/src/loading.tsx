@@ -22,12 +22,12 @@ export const CommandLoading = ({
   ...rest
 }: CommandLoadingProps): JSX.Element => (
   <div
-    ref={ref}
-    command-palette-loading=""
-    role="progressbar"
-    aria-valuenow={progress != null ? Math.round(progress * 100) : undefined}
-    aria-valuemin={0}
     aria-valuemax={100}
+    aria-valuemin={0}
+    aria-valuenow={progress != null ? Math.round(progress * 100) : undefined}
+    command-palette-loading=""
+    ref={ref}
+    role="progressbar"
     {...rest}
   >
     {children}

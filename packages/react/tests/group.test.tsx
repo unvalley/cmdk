@@ -41,7 +41,7 @@ describe("<CommandGroup> + <CommandItem>", () => {
     const { container } = render(
       <Command search="xyz">
         <CommandList>
-          <CommandGroup heading="Pinned" forceMount>
+          <CommandGroup forceMount heading="Pinned">
             <CommandItem value="home">Home</CommandItem>
           </CommandGroup>
         </CommandList>
@@ -56,7 +56,7 @@ describe("<CommandGroup> + <CommandItem>", () => {
       <Command>
         <CommandList>
           <CommandGroup heading="Navigation">
-            <CommandItem value="home" groupId="explicit">
+            <CommandItem groupId="explicit" value="home">
               Home
             </CommandItem>
           </CommandGroup>

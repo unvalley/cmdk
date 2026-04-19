@@ -112,11 +112,11 @@ export const CommandDialog = ({
 
   return (
     <dialog
-      ref={dialogRef}
-      command-palette-dialog=""
       className={dialogClassName}
+      command-palette-dialog=""
       onClick={handleClick}
       onKeyDown={handleKeyDown}
+      ref={dialogRef}
     >
       <Command
         key={commandInstanceKey}

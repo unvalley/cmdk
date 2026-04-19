@@ -17,7 +17,7 @@ describe("<Command.Item>", () => {
     const onSelect = vi.fn()
     render(
       <Command>
-        <CommandItem value="apple" onSelect={onSelect}>
+        <CommandItem onSelect={onSelect} value="apple">
           Apple
         </CommandItem>
       </Command>,
@@ -30,7 +30,7 @@ describe("<Command.Item>", () => {
     const onSelect = vi.fn()
     render(
       <Command>
-        <CommandItem value="apple" onSelect={onSelect}>
+        <CommandItem onSelect={onSelect} value="apple">
           Apple
         </CommandItem>
       </Command>,
@@ -55,7 +55,7 @@ describe("<Command.Item>", () => {
   it("sets data-disabled on disabled items", async () => {
     render(
       <Command>
-        <CommandItem value="apple" disabled>
+        <CommandItem disabled value="apple">
           Apple
         </CommandItem>
       </Command>,

@@ -34,22 +34,22 @@ export const CommandGroup = ({
 
   return (
     <div
-      ref={ref}
       command-palette-group=""
-      role="presentation"
-      hidden={!isVisible || undefined}
       data-group-id={id}
+      hidden={!isVisible || undefined}
+      ref={ref}
+      role="presentation"
       {...rest}
     >
       {heading != null && (
-        <div id={id} command-palette-group-heading="">
+        <div command-palette-group-heading="" id={id}>
           {heading}
         </div>
       )}
       <div
+        aria-labelledby={heading != null ? id : undefined}
         command-palette-group-items=""
         role="group"
-        aria-labelledby={heading != null ? id : undefined}
       >
         <GroupContext.Provider value={id}>{children}</GroupContext.Provider>
       </div>

@@ -103,17 +103,17 @@ export const CommandItem = ({
     // biome-ignore lint/a11y/useKeyWithClickEvents: items are navigated via arrow keys on the root, not individually focused
     // biome-ignore lint/a11y/useFocusableInteractive: items are navigated via the input, not directly focused
     <div
-      ref={ref}
-      command-palette-item=""
-      id={id}
-      role="option"
-      aria-selected={isSelected}
       aria-disabled={disabled || undefined}
-      data-selected={isSelected || undefined}
+      aria-selected={isSelected}
+      command-palette-item=""
       data-disabled={disabled || undefined}
+      data-selected={isSelected || undefined}
+      id={id}
+      ref={ref}
+      role="option"
       {...rest}
-      onPointerMove={handlePointerMove}
       onClick={handleClick}
+      onPointerMove={handlePointerMove}
     >
       {children}
     </div>

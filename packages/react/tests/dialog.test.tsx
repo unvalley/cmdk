@@ -9,7 +9,7 @@ import { CommandList } from "../src/list"
 describe("<CommandDialog>", () => {
   it("does not render dialog content visibly when open=false", () => {
     render(
-      <CommandDialog open={false} onOpenChange={() => {}} label="menu">
+      <CommandDialog label="menu" onOpenChange={() => {}} open={false}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
@@ -20,7 +20,7 @@ describe("<CommandDialog>", () => {
 
   it("opens the dialog when open=true", () => {
     render(
-      <CommandDialog open={true} onOpenChange={() => {}} label="menu">
+      <CommandDialog label="menu" onOpenChange={() => {}} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
@@ -30,21 +30,21 @@ describe("<CommandDialog>", () => {
 
   it("toggles open state when prop changes", () => {
     const { rerender } = render(
-      <CommandDialog open={false} onOpenChange={() => {}} label="menu">
+      <CommandDialog label="menu" onOpenChange={() => {}} open={false}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
     expect(document.querySelector("dialog")?.open).toBe(false)
 
     rerender(
-      <CommandDialog open={true} onOpenChange={() => {}} label="menu">
+      <CommandDialog label="menu" onOpenChange={() => {}} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
     expect(document.querySelector("dialog")?.open).toBe(true)
 
     rerender(
-      <CommandDialog open={false} onOpenChange={() => {}} label="menu">
+      <CommandDialog label="menu" onOpenChange={() => {}} open={false}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
@@ -54,7 +54,7 @@ describe("<CommandDialog>", () => {
   it("fires onOpenChange(false) when the native close event is dispatched (ESC key)", () => {
     const onOpenChange = vi.fn()
     render(
-      <CommandDialog open={true} onOpenChange={onOpenChange} label="menu">
+      <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
@@ -69,7 +69,7 @@ describe("<CommandDialog>", () => {
   it("closes when Escape is pressed from the input (Safari-safe path)", () => {
     const onOpenChange = vi.fn()
     render(
-      <CommandDialog open={true} onOpenChange={onOpenChange} label="menu">
+      <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
@@ -83,10 +83,10 @@ describe("<CommandDialog>", () => {
       const [open, setOpen] = useState(true)
       return (
         <>
-          <button type="button" onClick={() => setOpen(true)}>
+          <button onClick={() => setOpen(true)} type="button">
             open
           </button>
-          <CommandDialog open={open} onOpenChange={setOpen} label="menu">
+          <CommandDialog label="menu" onOpenChange={setOpen} open={open}>
             <CommandInput placeholder="Search" />
           </CommandDialog>
         </>
@@ -107,7 +107,7 @@ describe("<CommandDialog>", () => {
 
   it("honors defaultSearch for uncontrolled dialogs", () => {
     render(
-      <CommandDialog open={true} onOpenChange={() => {}} defaultSearch="hello" label="menu">
+      <CommandDialog defaultSearch="hello" label="menu" onOpenChange={() => {}} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
@@ -120,10 +120,10 @@ describe("<CommandDialog>", () => {
       const [open, setOpen] = useState(true)
       return (
         <>
-          <button type="button" onClick={() => setOpen(true)}>
+          <button onClick={() => setOpen(true)} type="button">
             open
           </button>
-          <CommandDialog open={open} onOpenChange={setOpen} defaultSearch="hello" label="menu">
+          <CommandDialog defaultSearch="hello" label="menu" onOpenChange={setOpen} open={open}>
             <CommandInput placeholder="Search" />
           </CommandDialog>
         </>
@@ -148,15 +148,15 @@ describe("<CommandDialog>", () => {
       const [search, setSearch] = useState("hello")
       return (
         <>
-          <button type="button" onClick={() => setOpen(true)}>
+          <button onClick={() => setOpen(true)} type="button">
             open
           </button>
           <CommandDialog
-            open={open}
-            onOpenChange={setOpen}
-            search={search}
-            onSearchChange={setSearch}
             label="menu"
+            onOpenChange={setOpen}
+            onSearchChange={setSearch}
+            open={open}
+            search={search}
           >
             <CommandInput placeholder="Search" />
           </CommandDialog>
@@ -176,7 +176,7 @@ describe("<CommandDialog>", () => {
   it("does not close on Escape during IME composition", () => {
     const onOpenChange = vi.fn()
     render(
-      <CommandDialog open={true} onOpenChange={onOpenChange} label="menu">
+      <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
@@ -187,7 +187,7 @@ describe("<CommandDialog>", () => {
 
   it("contains the Command with the command-palette-root attribute", () => {
     render(
-      <CommandDialog open={true} onOpenChange={() => {}} label="menu">
+      <CommandDialog label="menu" onOpenChange={() => {}} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
@@ -199,10 +199,10 @@ describe("<CommandDialog>", () => {
     const onSearchChange = vi.fn()
     render(
       <CommandDialog
-        open={true}
-        onOpenChange={() => {}}
         label="menu"
+        onOpenChange={() => {}}
         onSearchChange={onSearchChange}
+        open={true}
       >
         <CommandInput placeholder="Search" />
         <CommandList>
@@ -218,7 +218,7 @@ describe("<CommandDialog>", () => {
   it("closing via backdrop click (clicking the dialog element itself) fires onOpenChange(false)", () => {
     const onOpenChange = vi.fn()
     render(
-      <CommandDialog open={true} onOpenChange={onOpenChange} label="menu">
+      <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
@@ -233,7 +233,7 @@ describe("<CommandDialog>", () => {
   it("clicking inside the dialog does NOT close it", () => {
     const onOpenChange = vi.fn()
     render(
-      <CommandDialog open={true} onOpenChange={onOpenChange} label="menu">
+      <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )

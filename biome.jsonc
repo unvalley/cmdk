@@ -1,6 +1,16 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.12/schema.json",
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assist": {
+    "actions": {
+      "source": {
+        "noDuplicateClasses": "on",
+        "organizeImports": "on",
+        "useSortedAttributes": "on",
+        "useSortedProperties": "on",
+        "useSortedInterfaceMembers": "on"
+      }
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": { "recommended": true }
@@ -21,6 +31,11 @@
       "quoteStyle": "double",
       "semicolons": "asNeeded",
       "trailingCommas": "all"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "files": {

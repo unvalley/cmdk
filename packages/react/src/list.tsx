@@ -18,7 +18,7 @@ export const CommandList = ({ ref, children, ...rest }: CommandListProps): JSX.E
   const { listId } = useCommandA11y()
 
   return (
-    <div ref={ref} id={listId} command-palette-list="" role="listbox" {...rest}>
+    <div command-palette-list="" id={listId} ref={ref} role="listbox" {...rest}>
       {children}
     </div>
   )

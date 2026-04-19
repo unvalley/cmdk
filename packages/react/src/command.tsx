@@ -130,11 +130,11 @@ export const Command = ({ label, className, children, ...options }: CommandProps
         }}
       >
         <div
-          command-palette-root=""
-          role="application"
           aria-label={label}
           className={className}
+          command-palette-root=""
           onKeyDown={handleKeyDown}
+          role="application"
         >
           {children}
         </div>

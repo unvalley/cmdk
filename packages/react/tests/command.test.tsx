@@ -33,7 +33,7 @@ describe("<Command>", () => {
 
   it("updates filter after rerender", () => {
     const { rerender } = render(
-      <Command search="app" filter="none">
+      <Command filter="none" search="app">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
           <CommandItem value="banana">Banana</CommandItem>
@@ -43,7 +43,7 @@ describe("<Command>", () => {
     expect(screen.getByText("Banana")).toBeInTheDocument()
 
     rerender(
-      <Command search="app" filter="contains">
+      <Command filter="contains" search="app">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
           <CommandItem value="banana">Banana</CommandItem>
@@ -58,7 +58,7 @@ describe("<Command>", () => {
     const endsWithApp = (value: string, search: string) => (value.endsWith(search) ? 1 : 0)
 
     const { rerender } = render(
-      <Command search="app" filter={startsWithApp}>
+      <Command filter={startsWithApp} search="app">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
           <CommandItem value="snapapp">Snapapp</CommandItem>
@@ -68,7 +68,7 @@ describe("<Command>", () => {
     expect(screen.queryByText("Snapapp")).not.toBeInTheDocument()
 
     rerender(
-      <Command search="app" filter={endsWithApp}>
+      <Command filter={endsWithApp} search="app">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
           <CommandItem value="snapapp">Snapapp</CommandItem>
@@ -141,7 +141,7 @@ describe("<Command.Input>", () => {
 
   it("prefers search over defaultSearch", () => {
     render(
-      <Command search="banana" defaultSearch="apple">
+      <Command defaultSearch="apple" search="banana">
         <CommandInput placeholder="Search" />
       </Command>,
     )
@@ -155,7 +155,7 @@ describe("<Command.Input>", () => {
 
       return (
         <>
-          <button type="button" onClick={() => setInputValue("ban")}>
+          <button onClick={() => setInputValue("ban")} type="button">
             set-ban
           </button>
           <Command>
@@ -271,7 +271,7 @@ describe("<Command.Input>", () => {
 
   it("prefers value over defaultValue", () => {
     render(
-      <Command value="banana" defaultValue="apple">
+      <Command defaultValue="apple" value="banana">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
           <CommandItem value="banana">Banana</CommandItem>
