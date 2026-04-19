@@ -1,38 +1,41 @@
-import { fireEvent, render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
 import { useState } from "react"
 import { describe, expect, it, vi } from "vitest"
+import { userEvent } from "vitest/browser"
 import { Command } from "../src/command"
 import { useCommandSlice } from "../src/context"
 import * as commandPalette from "../src/index"
 import { CommandInput } from "../src/input"
 import { CommandItem } from "../src/item"
 import { CommandList } from "../src/list"
+import { dispatchCompositionEnd, dispatchCompositionStart, dispatchInput, render } from "./helpers"
 
 describe("<Command>", () => {
-  it("renders children", () => {
-    render(
+  it("renders children", async () => {
+    const screen = await render(
       <Command>
         <div>hello</div>
       </Command>,
     )
-    expect(screen.getByText("hello")).toBeInTheDocument()
+
+    await expect.element(screen.getByText("hello")).toBeInTheDocument()
   })
 
-  it("renders with command-palette-root data attribute", () => {
-    const { container } = render(<Command label="test" />)
-    expect(container.querySelector("[command-palette-root]")).toBeInTheDocument()
+  it("renders with command-palette-root data attribute", async () => {
+    const { container } = await render(<Command label="test" />)
+
+    expect(container.querySelector("[command-palette-root]")).not.toBeNull()
   })
 
-  it("forwards label as aria-label", () => {
-    const { container } = render(<Command label="My Menu" />)
+  it("forwards label as aria-label", async () => {
+    const { container } = await render(<Command label="My Menu" />)
+
     expect(container.querySelector("[command-palette-root]")?.getAttribute("aria-label")).toBe(
       "My Menu",
     )
   })
 
-  it("updates filter after rerender", () => {
-    const { rerender } = render(
+  it("updates filter after rerender", async () => {
+    const screen = await render(
       <Command filter="none" search="app">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
@@ -40,9 +43,10 @@ describe("<Command>", () => {
         </CommandList>
       </Command>,
     )
-    expect(screen.getByText("Banana")).toBeInTheDocument()
 
-    rerender(
+    await expect.element(screen.getByText("Banana")).toBeInTheDocument()
+
+    await screen.rerender(
       <Command filter="contains" search="app">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
@@ -50,14 +54,15 @@ describe("<Command>", () => {
         </CommandList>
       </Command>,
     )
-    expect(screen.queryByText("Banana")).not.toBeInTheDocument()
+
+    await expect.element(screen.getByText("Banana")).not.toBeInTheDocument()
   })
 
-  it("updates custom filter after rerender", () => {
+  it("updates custom filter after rerender", async () => {
     const startsWithApp = (value: string, search: string) => (value.startsWith(search) ? 1 : 0)
     const endsWithApp = (value: string, search: string) => (value.endsWith(search) ? 1 : 0)
 
-    const { rerender } = render(
+    const screen = await render(
       <Command filter={startsWithApp} search="app">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
@@ -65,9 +70,10 @@ describe("<Command>", () => {
         </CommandList>
       </Command>,
     )
-    expect(screen.queryByText("Snapapp")).not.toBeInTheDocument()
 
-    rerender(
+    await expect.element(screen.getByText("Snapapp")).not.toBeInTheDocument()
+
+    await screen.rerender(
       <Command filter={endsWithApp} search="app">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
@@ -75,81 +81,87 @@ describe("<Command>", () => {
         </CommandList>
       </Command>,
     )
-    expect(screen.getByText("Snapapp")).toBeInTheDocument()
+
+    await expect.element(screen.getByText("Snapapp")).toBeInTheDocument()
   })
 })
 
 describe("<Command.Input>", () => {
   it("forwards typing to store search", async () => {
     const onSearchChange = vi.fn()
-    render(
+    const screen = await render(
       <Command onSearchChange={onSearchChange}>
         <CommandInput placeholder="Search" />
       </Command>,
     )
-    const input = screen.getByPlaceholderText("Search")
-    await userEvent.type(input, "app")
+    const input = screen.getByPlaceholder("Search")
+
+    await input.fill("app")
+
     expect(onSearchChange).toHaveBeenLastCalledWith("app")
   })
 
-  it("does not fire onSearchChange while IME composing (#363)", () => {
+  it("does not fire onSearchChange while IME composing (#363)", async () => {
     const onSearchChange = vi.fn()
-    render(
+    const screen = await render(
       <Command onSearchChange={onSearchChange}>
         <CommandInput placeholder="Search" />
       </Command>,
     )
-    const input = screen.getByPlaceholderText("Search") as HTMLInputElement
-    fireEvent.compositionStart(input)
-    fireEvent.change(input, { target: { value: "こ" } })
+    const input = screen.getByPlaceholder("Search").element() as HTMLInputElement
+
+    dispatchCompositionStart(input)
+    dispatchInput(input, "こ")
     expect(onSearchChange).not.toHaveBeenCalled()
-    fireEvent.change(input, { target: { value: "こんにちは" } })
-    fireEvent.compositionEnd(input)
+
+    dispatchInput(input, "こんにちは")
+    dispatchCompositionEnd(input)
+
     expect(onSearchChange).toHaveBeenCalledWith("こんにちは")
   })
 
   it("uses the latest onSearchChange after rerender", async () => {
     const first = vi.fn()
     const second = vi.fn()
-    const { rerender } = render(
+    const screen = await render(
       <Command onSearchChange={first}>
         <CommandInput placeholder="Search" />
       </Command>,
     )
 
-    rerender(
+    await screen.rerender(
       <Command onSearchChange={second}>
         <CommandInput placeholder="Search" />
       </Command>,
     )
 
-    const input = screen.getByPlaceholderText("Search")
-    await userEvent.type(input, "a")
+    await screen.getByPlaceholder("Search").fill("a")
+
     expect(first).not.toHaveBeenCalled()
     expect(second).toHaveBeenCalledWith("a")
   })
 
-  it("supports defaultSearch for uncontrolled usage", () => {
-    render(
+  it("supports defaultSearch for uncontrolled usage", async () => {
+    const screen = await render(
       <Command defaultSearch="apple">
         <CommandInput placeholder="Search" />
       </Command>,
     )
 
-    expect(screen.getByPlaceholderText("Search")).toHaveValue("apple")
+    await expect.element(screen.getByPlaceholder("Search")).toHaveValue("apple")
   })
 
-  it("prefers search over defaultSearch", () => {
-    render(
+  it("prefers search over defaultSearch", async () => {
+    const screen = await render(
       <Command defaultSearch="apple" search="banana">
         <CommandInput placeholder="Search" />
       </Command>,
     )
 
-    expect(screen.getByPlaceholderText("Search")).toHaveValue("banana")
+    await expect.element(screen.getByPlaceholder("Search")).toHaveValue("banana")
   })
 
-  it("syncs CommandInput value into the store for programmatic updates", () => {
+  it("syncs CommandInput value into the store for programmatic updates", async () => {
     const Wrapper = () => {
       const [inputValue, setInputValue] = useState("app")
 
@@ -169,19 +181,19 @@ describe("<Command.Input>", () => {
       )
     }
 
-    render(<Wrapper />)
+    const screen = await render(<Wrapper />)
 
-    expect(screen.getByText("Apple")).toBeInTheDocument()
-    expect(screen.queryByText("Banana")).not.toBeInTheDocument()
+    await expect.element(screen.getByText("Apple")).toBeInTheDocument()
+    await expect.element(screen.getByText("Banana")).not.toBeInTheDocument()
 
-    fireEvent.click(screen.getByText("set-ban"))
+    await screen.getByText("set-ban").click()
 
-    expect(screen.queryByText("Apple")).not.toBeInTheDocument()
-    expect(screen.getByText("Banana")).toBeInTheDocument()
+    await expect.element(screen.getByText("Apple")).not.toBeInTheDocument()
+    await expect.element(screen.getByText("Banana")).toBeInTheDocument()
   })
 
-  it("wires combobox accessibility attributes to the active option", () => {
-    render(
+  it("wires combobox accessibility attributes to the active option", async () => {
+    const screen = await render(
       <Command>
         <CommandInput placeholder="Search" />
         <CommandList>
@@ -191,20 +203,23 @@ describe("<Command.Input>", () => {
       </Command>,
     )
 
-    const input = screen.getByPlaceholderText("Search")
-    const list = document.querySelector("[command-palette-list]")
+    const input = screen.getByPlaceholder("Search")
+    const list = screen.container.querySelector("[command-palette-list]")
     expect(list?.id).toBeTruthy()
-    expect(input).toHaveAttribute("aria-controls", list?.id)
+    await expect.element(input).toHaveAttribute("aria-controls", list?.id ?? "")
 
-    fireEvent.keyDown(input, { key: "ArrowDown" })
+    await input.click()
+    await userEvent.keyboard("{ArrowDown}")
 
-    const activeItem = screen.getByText("Apple").closest("[command-palette-item]")
-    expect(activeItem?.id).toBeTruthy()
-    expect(input).toHaveAttribute("aria-activedescendant", activeItem?.id)
+    const activeItem = screen.getByText("Apple").element()
+    expect(activeItem.id).toBeTruthy()
+    expect((input.element() as HTMLInputElement).getAttribute("aria-activedescendant")).toBe(
+      activeItem.id,
+    )
   })
 
-  it("uses distinct option ids for empty-string and literal 'empty' values", () => {
-    render(
+  it("uses distinct option ids for empty-string and literal 'empty' values", async () => {
+    const screen = await render(
       <Command>
         <CommandInput placeholder="Search" />
         <CommandList>
@@ -213,14 +228,16 @@ describe("<Command.Input>", () => {
         </CommandList>
       </Command>,
     )
+    const input = screen.getByPlaceholder("Search")
 
-    const input = screen.getByPlaceholderText("Search")
+    await input.click()
+    await userEvent.keyboard("{ArrowDown}")
+    const emptyValueId = (input.element() as HTMLInputElement).getAttribute("aria-activedescendant")
 
-    fireEvent.keyDown(input, { key: "ArrowDown" })
-    const emptyValueId = input.getAttribute("aria-activedescendant")
-
-    fireEvent.keyDown(input, { key: "ArrowDown" })
-    const literalEmptyId = input.getAttribute("aria-activedescendant")
+    await userEvent.keyboard("{ArrowDown}")
+    const literalEmptyId = (input.element() as HTMLInputElement).getAttribute(
+      "aria-activedescendant",
+    )
 
     expect(emptyValueId).toBeTruthy()
     expect(literalEmptyId).toBeTruthy()
@@ -230,7 +247,7 @@ describe("<Command.Input>", () => {
   it("uses the latest onValueChange after rerender", async () => {
     const first = vi.fn()
     const second = vi.fn()
-    const { rerender } = render(
+    const screen = await render(
       <Command onValueChange={first}>
         <CommandInput placeholder="Search" />
         <CommandList>
@@ -239,7 +256,7 @@ describe("<Command.Input>", () => {
       </Command>,
     )
 
-    rerender(
+    await screen.rerender(
       <Command onValueChange={second}>
         <CommandInput placeholder="Search" />
         <CommandList>
@@ -248,14 +265,16 @@ describe("<Command.Input>", () => {
       </Command>,
     )
 
-    const input = screen.getByPlaceholderText("Search")
-    fireEvent.keyDown(input, { key: "ArrowDown" })
+    const input = screen.getByPlaceholder("Search")
+    await input.click()
+    await userEvent.keyboard("{ArrowDown}")
+
     expect(first).not.toHaveBeenCalled()
     expect(second).toHaveBeenCalledWith("apple")
   })
 
-  it("supports defaultValue for uncontrolled usage", () => {
-    render(
+  it("supports defaultValue for uncontrolled usage", async () => {
+    const screen = await render(
       <Command defaultValue="apple">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
@@ -264,13 +283,11 @@ describe("<Command.Input>", () => {
       </Command>,
     )
 
-    expect(
-      screen.getByText("Apple").closest("[command-palette-item]")?.getAttribute("data-selected"),
-    ).toBe("true")
+    await expect.element(screen.getByText("Apple")).toHaveAttribute("data-selected", "true")
   })
 
-  it("prefers value over defaultValue", () => {
-    render(
+  it("prefers value over defaultValue", async () => {
+    const screen = await render(
       <Command defaultValue="apple" value="banana">
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
@@ -279,23 +296,21 @@ describe("<Command.Input>", () => {
       </Command>,
     )
 
-    expect(
-      screen.getByText("Banana").closest("[command-palette-item]")?.getAttribute("data-selected"),
-    ).toBe("true")
+    await expect.element(screen.getByText("Banana")).toHaveAttribute("data-selected", "true")
   })
 })
 
 describe("useCommandSlice", () => {
-  it("selects from state directly", () => {
+  it("selects from state directly", async () => {
     const SearchValue = () => <div>{useCommandSlice((state) => state.search)}</div>
 
-    render(
+    const screen = await render(
       <Command search="hello">
         <SearchValue />
       </Command>,
     )
 
-    expect(screen.getByText("hello")).toBeInTheDocument()
+    await expect.element(screen.getByText("hello")).toBeInTheDocument()
   })
 })
 

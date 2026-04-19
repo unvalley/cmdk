@@ -1,23 +1,23 @@
-import { fireEvent, render, screen } from "@testing-library/react"
 import { useRef } from "react"
 import { describe, expect, it } from "vitest"
 import { Command } from "../src/command"
 import { CommandItem } from "../src/item"
 import { CommandList } from "../src/list"
+import { render } from "./helpers"
 
 describe("regression: per-item render count", () => {
-  it("hovering item B does not re-render item A (#377)", () => {
+  it("hovering item B does not re-render item A (#377)", async () => {
     const renderCounts = { a: 0, b: 0 }
 
     function CountingItem({ value, label }: { value: string; label: "a" | "b" }) {
-      // Use a ref-incremented counter so re-renders are observable.
       const count = useRef(0)
       count.current++
       renderCounts[label] = count.current
+
       return <CommandItem value={value}>{value}</CommandItem>
     }
 
-    render(
+    const screen = await render(
       <Command>
         <CommandList>
           <CountingItem label="a" value="a" />
@@ -27,8 +27,9 @@ describe("regression: per-item render count", () => {
     )
 
     const aBefore = renderCounts.a
-    fireEvent.pointerMove(screen.getByText("b"))
-    // Item B re-renders (its isSelected slice changed). Item A must not.
+
+    await screen.getByText("b").hover()
+
     expect(renderCounts.a).toBe(aBefore)
   })
 })

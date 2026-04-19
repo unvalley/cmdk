@@ -1,49 +1,52 @@
-import { act, fireEvent, render, screen } from "@testing-library/react"
 import { useState } from "react"
 import { describe, expect, it, vi } from "vitest"
+import { userEvent } from "vitest/browser"
 import { CommandDialog } from "../src/dialog"
 import { CommandInput } from "../src/input"
 import { CommandItem } from "../src/item"
 import { CommandList } from "../src/list"
+import { dispatchKeyDown, render } from "./helpers"
 
 describe("<CommandDialog>", () => {
-  it("does not render dialog content visibly when open=false", () => {
-    render(
+  it("does not render dialog content visibly when open=false", async () => {
+    await render(
       <CommandDialog label="menu" onOpenChange={() => {}} open={false}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
+
     const dialog = document.querySelector("dialog")
-    expect(dialog).toBeInTheDocument()
+    expect(dialog).not.toBeNull()
     expect(dialog?.open).toBe(false)
   })
 
-  it("opens the dialog when open=true", () => {
-    render(
+  it("opens the dialog when open=true", async () => {
+    await render(
       <CommandDialog label="menu" onOpenChange={() => {}} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
+
     const dialog = document.querySelector("dialog")
     expect(dialog?.open).toBe(true)
   })
 
-  it("toggles open state when prop changes", () => {
-    const { rerender } = render(
+  it("toggles open state when prop changes", async () => {
+    const screen = await render(
       <CommandDialog label="menu" onOpenChange={() => {}} open={false}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
     expect(document.querySelector("dialog")?.open).toBe(false)
 
-    rerender(
+    await screen.rerender(
       <CommandDialog label="menu" onOpenChange={() => {}} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
     expect(document.querySelector("dialog")?.open).toBe(true)
 
-    rerender(
+    await screen.rerender(
       <CommandDialog label="menu" onOpenChange={() => {}} open={false}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
@@ -51,36 +54,42 @@ describe("<CommandDialog>", () => {
     expect(document.querySelector("dialog")?.open).toBe(false)
   })
 
-  it("fires onOpenChange(false) when the native close event is dispatched (ESC key)", () => {
+  it("fires onOpenChange(false) when the native close event is dispatched (ESC key)", async () => {
     const onOpenChange = vi.fn()
-    render(
+
+    await render(
       <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
+
     const dialog = document.querySelector("dialog")
     if (!dialog) throw new Error("dialog not found")
-    // Simulate the user pressing ESC — the native dialog fires a `close` event
-    // and sets open=false. We simulate by calling close() directly.
-    fireEvent(dialog, new Event("close"))
+
+    dialog.dispatchEvent(new Event("close"))
+
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
-  it("closes when Escape is pressed from the input (Safari-safe path)", () => {
+  it("closes when Escape is pressed from the input (Safari-safe path)", async () => {
     const onOpenChange = vi.fn()
-    render(
+    const screen = await render(
       <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
-    const input = screen.getByPlaceholderText("Search")
-    fireEvent.keyDown(input, { key: "Escape" })
+    const input = screen.getByPlaceholder("Search")
+
+    await input.click()
+    await userEvent.keyboard("{Escape}")
+
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
   it("clears the search input when the dialog closes", async () => {
     const Wrapper = () => {
       const [open, setOpen] = useState(true)
+
       return (
         <>
           <button onClick={() => setOpen(true)} type="button">
@@ -92,32 +101,34 @@ describe("<CommandDialog>", () => {
         </>
       )
     }
-    render(<Wrapper />)
-    const input = screen.getByPlaceholderText("Search") as HTMLInputElement
-    fireEvent.change(input, { target: { value: "hello" } })
-    expect(input.value).toBe("hello")
-    // Close with Escape
-    fireEvent.keyDown(input, { key: "Escape" })
-    await act(async () => {})
-    // Reopen — the input should be cleared
-    fireEvent.click(screen.getByText("open"))
-    await act(async () => {})
-    expect((screen.getByPlaceholderText("Search") as HTMLInputElement).value).toBe("")
+
+    const screen = await render(<Wrapper />)
+    const input = screen.getByPlaceholder("Search")
+
+    await input.fill("hello")
+    await expect.element(input).toHaveValue("hello")
+
+    await input.click()
+    await userEvent.keyboard("{Escape}")
+    await screen.getByText("open").click()
+
+    await expect.element(screen.getByPlaceholder("Search")).toHaveValue("")
   })
 
-  it("honors defaultSearch for uncontrolled dialogs", () => {
-    render(
+  it("honors defaultSearch for uncontrolled dialogs", async () => {
+    const screen = await render(
       <CommandDialog defaultSearch="hello" label="menu" onOpenChange={() => {}} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
 
-    expect(screen.getByPlaceholderText("Search")).toHaveValue("hello")
+    await expect.element(screen.getByPlaceholder("Search")).toHaveValue("hello")
   })
 
   it("restores defaultSearch when an uncontrolled dialog closes", async () => {
     const Wrapper = () => {
       const [open, setOpen] = useState(true)
+
       return (
         <>
           <button onClick={() => setOpen(true)} type="button">
@@ -130,22 +141,25 @@ describe("<CommandDialog>", () => {
       )
     }
 
-    render(<Wrapper />)
-    const input = screen.getByPlaceholderText("Search") as HTMLInputElement
-    expect(input.value).toBe("hello")
-    fireEvent.change(input, { target: { value: "world" } })
-    expect(input.value).toBe("world")
-    fireEvent.keyDown(input, { key: "Escape" })
-    await act(async () => {})
-    fireEvent.click(screen.getByText("open"))
-    await act(async () => {})
-    expect((screen.getByPlaceholderText("Search") as HTMLInputElement).value).toBe("hello")
+    const screen = await render(<Wrapper />)
+    const input = screen.getByPlaceholder("Search")
+
+    await expect.element(input).toHaveValue("hello")
+    await input.fill("world")
+    await expect.element(input).toHaveValue("world")
+
+    await input.click()
+    await userEvent.keyboard("{Escape}")
+    await screen.getByText("open").click()
+
+    await expect.element(screen.getByPlaceholder("Search")).toHaveValue("hello")
   })
 
   it("does not clear search on close when search is controlled", async () => {
     const Wrapper = () => {
       const [open, setOpen] = useState(true)
       const [search, setSearch] = useState("hello")
+
       return (
         <>
           <button onClick={() => setOpen(true)} type="button">
@@ -163,41 +177,45 @@ describe("<CommandDialog>", () => {
         </>
       )
     }
-    render(<Wrapper />)
-    const input = screen.getByPlaceholderText("Search") as HTMLInputElement
-    fireEvent.keyDown(input, { key: "Escape" })
-    await act(async () => {})
-    fireEvent.click(screen.getByText("open"))
-    await act(async () => {})
-    // Consumer kept "hello" in its state — library must not have touched it.
-    expect((screen.getByPlaceholderText("Search") as HTMLInputElement).value).toBe("hello")
+
+    const screen = await render(<Wrapper />)
+    const input = screen.getByPlaceholder("Search")
+
+    await input.click()
+    await userEvent.keyboard("{Escape}")
+    await screen.getByText("open").click()
+
+    await expect.element(screen.getByPlaceholder("Search")).toHaveValue("hello")
   })
 
-  it("does not close on Escape during IME composition", () => {
+  it("does not close on Escape during IME composition", async () => {
     const onOpenChange = vi.fn()
-    render(
+    const screen = await render(
       <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
-    const input = screen.getByPlaceholderText("Search")
-    fireEvent.keyDown(input, { key: "Escape", isComposing: true })
+    const input = screen.getByPlaceholder("Search").element()
+
+    dispatchKeyDown(input, { isComposing: true, key: "Escape" })
+
     expect(onOpenChange).not.toHaveBeenCalled()
   })
 
-  it("contains the Command with the command-palette-root attribute", () => {
-    render(
+  it("contains the Command with the command-palette-root attribute", async () => {
+    await render(
       <CommandDialog label="menu" onOpenChange={() => {}} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
+
     const dialog = document.querySelector("dialog")
-    expect(dialog?.querySelector("[command-palette-root]")).toBeInTheDocument()
+    expect(dialog?.querySelector("[command-palette-root]")).not.toBeNull()
   })
 
   it("renders children as Command content (input is usable)", async () => {
     const onSearchChange = vi.fn()
-    render(
+    const screen = await render(
       <CommandDialog
         label="menu"
         onOpenChange={() => {}}
@@ -210,35 +228,39 @@ describe("<CommandDialog>", () => {
         </CommandList>
       </CommandDialog>,
     )
-    const input = screen.getByPlaceholderText("Search")
-    fireEvent.change(input, { target: { value: "a" } })
+
+    await screen.getByPlaceholder("Search").fill("a")
+
     expect(onSearchChange).toHaveBeenCalledWith("a")
   })
 
-  it("closing via backdrop click (clicking the dialog element itself) fires onOpenChange(false)", () => {
+  it("closing via backdrop click (clicking the dialog element itself) fires onOpenChange(false)", async () => {
     const onOpenChange = vi.fn()
-    render(
+
+    await render(
       <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
+
     const dialog = document.querySelector("dialog")
     if (!dialog) throw new Error("dialog not found")
-    // A click whose target is the dialog element itself (not a descendant)
-    // represents a backdrop click — dispatch on the dialog element directly
-    fireEvent.click(dialog, { target: dialog })
+
+    dialog.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }))
+
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
-  it("clicking inside the dialog does NOT close it", () => {
+  it("clicking inside the dialog does NOT close it", async () => {
     const onOpenChange = vi.fn()
-    render(
+    const screen = await render(
       <CommandDialog label="menu" onOpenChange={onOpenChange} open={true}>
         <CommandInput placeholder="Search" />
       </CommandDialog>,
     )
-    const input = screen.getByPlaceholderText("Search")
-    fireEvent.click(input)
+
+    await screen.getByPlaceholder("Search").click()
+
     expect(onOpenChange).not.toHaveBeenCalled()
   })
 })
