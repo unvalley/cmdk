@@ -1,5 +1,12 @@
-import { type ChangeEvent, type CompositionEvent, type JSX, type Ref, useRef } from "react"
-import { useCommandSlice, useCommandStore } from "./context"
+import {
+  type ChangeEvent,
+  type CompositionEvent,
+  type JSX,
+  type Ref,
+  useEffect,
+  useRef,
+} from "react"
+import { useCommandA11y, useCommandSlice, useCommandStore } from "./context"
 
 /**
  * Props for the search input.
@@ -29,16 +36,29 @@ export const CommandInput = ({
   ...rest
 }: CommandInputProps): JSX.Element => {
   const store = useCommandStore()
+  const { getItemId, listId } = useCommandA11y()
   const search = useCommandSlice((s) => s.search)
   const hasVisibleItems = useCommandSlice((s) => s.filteredOrder.length > 0)
+  const selectedValue = useCommandSlice((s) => s.value)
+  const hasSelectedValue = useCommandSlice((s) => s.hasValue)
   const pendingValueRef = useRef<string>("")
+  const isControlled = value !== undefined
+  const activeDescendant = hasSelectedValue ? getItemId(selectedValue) : undefined
+
+  useEffect(() => {
+    if (value === undefined) return
+    if (store.getState().search === value) return
+    store.setSearch(value)
+  }, [store, value])
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     if (store.getState().isComposing) {
       pendingValueRef.current = e.target.value
       return
     }
-    store.setSearch(e.target.value)
+    if (!isControlled) {
+      store.setSearch(e.target.value)
+    }
     onValueChange?.(e.target.value)
   }
 
@@ -52,7 +72,9 @@ export const CommandInput = ({
     store.setComposing(false)
     const target = e.target as HTMLInputElement
     const finalValue = target.value || pendingValueRef.current
-    store.setSearch(finalValue)
+    if (!isControlled) {
+      store.setSearch(finalValue)
+    }
     onValueChange?.(finalValue)
     pendingValueRef.current = ""
     onCompositionEnd?.(e)
@@ -64,6 +86,8 @@ export const CommandInput = ({
       command-palette-input=""
       role="combobox"
       aria-autocomplete="list"
+      aria-controls={listId}
+      aria-activedescendant={activeDescendant}
       aria-expanded={hasVisibleItems}
       autoComplete="off"
       autoCorrect="off"

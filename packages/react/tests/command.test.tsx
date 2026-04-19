@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 import { Command } from "../src/command"
 import { useCommandSlice } from "../src/context"
@@ -146,6 +147,84 @@ describe("<Command.Input>", () => {
     )
 
     expect(screen.getByPlaceholderText("Search")).toHaveValue("banana")
+  })
+
+  it("syncs CommandInput value into the store for programmatic updates", () => {
+    const Wrapper = () => {
+      const [inputValue, setInputValue] = useState("app")
+
+      return (
+        <>
+          <button type="button" onClick={() => setInputValue("ban")}>
+            set-ban
+          </button>
+          <Command>
+            <CommandInput placeholder="Search" value={inputValue} />
+            <CommandList>
+              <CommandItem value="apple">Apple</CommandItem>
+              <CommandItem value="banana">Banana</CommandItem>
+            </CommandList>
+          </Command>
+        </>
+      )
+    }
+
+    render(<Wrapper />)
+
+    expect(screen.getByText("Apple")).toBeInTheDocument()
+    expect(screen.queryByText("Banana")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByText("set-ban"))
+
+    expect(screen.queryByText("Apple")).not.toBeInTheDocument()
+    expect(screen.getByText("Banana")).toBeInTheDocument()
+  })
+
+  it("wires combobox accessibility attributes to the active option", () => {
+    render(
+      <Command>
+        <CommandInput placeholder="Search" />
+        <CommandList>
+          <CommandItem value="apple">Apple</CommandItem>
+          <CommandItem value="banana">Banana</CommandItem>
+        </CommandList>
+      </Command>,
+    )
+
+    const input = screen.getByPlaceholderText("Search")
+    const list = document.querySelector("[command-palette-list]")
+    expect(list?.id).toBeTruthy()
+    expect(input).toHaveAttribute("aria-controls", list?.id)
+
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+
+    const activeItem = screen.getByText("Apple").closest("[command-palette-item]")
+    expect(activeItem?.id).toBeTruthy()
+    expect(input).toHaveAttribute("aria-activedescendant", activeItem?.id)
+  })
+
+  it("uses distinct option ids for empty-string and literal 'empty' values", () => {
+    render(
+      <Command>
+        <CommandInput placeholder="Search" />
+        <CommandList>
+          <CommandItem value="">Empty value</CommandItem>
+          <CommandItem value="empty">Literal empty</CommandItem>
+        </CommandList>
+      </Command>,
+    )
+
+    const input = screen.getByPlaceholderText("Search")
+
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    const emptyValueId = input.getAttribute("aria-activedescendant")
+
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    const literalEmptyId = input.getAttribute("aria-activedescendant")
+
+    expect(emptyValueId).toBeTruthy()
+    expect(literalEmptyId).toBeTruthy()
+    expect(emptyValueId).not.toBe(literalEmptyId)
   })
 
   it("uses the latest onValueChange after rerender", async () => {

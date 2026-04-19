@@ -1,6 +1,7 @@
 import { type CommandFilter, type CommandStore, createCommand } from "@command-palette/core"
-import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useRef } from "react"
-import { CommandContext } from "./context"
+import { type KeyboardEvent, type ReactNode, useEffect, useId, useMemo, useRef } from "react"
+import { createCommandItemId, createCommandListId } from "./a11y"
+import { CommandA11yContext, CommandContext } from "./context"
 
 /**
  * Props for the root command palette container.
@@ -40,6 +41,7 @@ export type CommandProps = {
  * keyboard interactions used to move and activate items.
  */
 export const Command = ({ label, className, children, ...options }: CommandProps): ReactNode => {
+  const baseId = useId()
   // Create store once. We pass *initial* options only; controlled props are
   // synced via effects below.
   // biome-ignore lint/correctness/useExhaustiveDependencies: store is intentionally created once
@@ -122,15 +124,22 @@ export const Command = ({ label, className, children, ...options }: CommandProps
 
   return (
     <CommandContext.Provider value={store}>
-      <div
-        command-palette-root=""
-        role="application"
-        aria-label={label}
-        className={className}
-        onKeyDown={handleKeyDown}
+      <CommandA11yContext.Provider
+        value={{
+          getItemId: (value) => createCommandItemId(baseId, value),
+          listId: createCommandListId(baseId),
+        }}
       >
-        {children}
-      </div>
+        <div
+          command-palette-root=""
+          role="application"
+          aria-label={label}
+          className={className}
+          onKeyDown={handleKeyDown}
+        >
+          {children}
+        </div>
+      </CommandA11yContext.Provider>
     </CommandContext.Provider>
   )
 }

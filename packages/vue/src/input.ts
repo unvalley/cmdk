@@ -1,5 +1,5 @@
 import { type DefineComponent, defineComponent, h, mergeProps, ref, type VNode, watch } from "vue"
-import { useCommandSlice, useCommandStore } from "./context"
+import { useCommandA11y, useCommandSlice, useCommandStore } from "./context"
 
 type CommandInputPropsOptions = {
   modelValue: StringConstructor
@@ -27,8 +27,11 @@ export const CommandInput: DefineComponent<CommandInputProps> = defineComponent(
   },
   setup(props, { attrs, emit }): () => VNode {
     const store = useCommandStore()
+    const { getItemId, listId } = useCommandA11y()
     const search = useCommandSlice((state) => state.search)
     const hasVisibleItems = useCommandSlice((state) => state.filteredOrder.length > 0)
+    const selectedValue = useCommandSlice((state) => state.value)
+    const hasSelectedValue = useCommandSlice((state) => state.hasValue)
     const pendingValue = ref("")
 
     watch(
@@ -74,6 +77,10 @@ export const CommandInput: DefineComponent<CommandInputProps> = defineComponent(
             "command-palette-input": "",
             role: "combobox",
             "aria-autocomplete": "list",
+            "aria-controls": listId,
+            "aria-activedescendant": hasSelectedValue.value
+              ? getItemId(selectedValue.value)
+              : undefined,
             "aria-expanded": hasVisibleItems.value ? "true" : "false",
             autoComplete: "off",
             autoCorrect: "off",

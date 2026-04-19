@@ -106,5 +106,15 @@ describe("createCommand: selection", () => {
     cmd.registerItem({ value: "a" })
     cmd.setValue("")
     expect(cmd.getState().value).toBe("")
+    expect(cmd.getState().hasValue).toBe(true)
+  })
+
+  it("selectFirst can highlight an empty-string item", () => {
+    const cmd = createCommand()
+    cmd.registerItem({ value: "" })
+    cmd.registerItem({ value: "a" })
+    cmd.selectFirst()
+    expect(cmd.getState().value).toBe("")
+    expect(cmd.getState().hasValue).toBe(true)
   })
 })

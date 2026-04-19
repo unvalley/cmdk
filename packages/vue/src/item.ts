@@ -9,7 +9,7 @@ import {
   type VNode,
   watch,
 } from "vue"
-import { GroupIdKey, useCommandId, useCommandSlice, useCommandStore } from "./context"
+import { GroupIdKey, useCommandA11y, useCommandSlice, useCommandStore } from "./context"
 
 type CommandItemPropsOptions = {
   value: {
@@ -65,9 +65,9 @@ export const CommandItem: DefineComponent<CommandItemProps> = defineComponent({
   },
   setup(props, { attrs, emit, slots }): () => VNode | null {
     const store = useCommandStore()
+    const { getItemId } = useCommandA11y()
     const inheritedGroupId = inject(GroupIdKey, null)
     const resolvedGroupId = computed(() => props.groupId ?? inheritedGroupId ?? undefined)
-    const id = useCommandId("item")
 
     watch(
       () => props.value,
@@ -101,7 +101,7 @@ export const CommandItem: DefineComponent<CommandItemProps> = defineComponent({
     )
 
     const isVisible = useCommandSlice((state) => state.visibleSet.has(props.value))
-    const isSelected = useCommandSlice((state) => state.value === props.value)
+    const isSelected = useCommandSlice((state) => state.hasValue && state.value === props.value)
     const selectOnHover = useCommandSlice((state) => state.selectOnHover)
 
     const handlePointerMove = (): void => {
@@ -123,7 +123,7 @@ export const CommandItem: DefineComponent<CommandItemProps> = defineComponent({
         "div",
         mergeProps(
           {
-            id,
+            id: getItemId(props.value),
             "command-palette-item": "",
             role: "option",
             "aria-selected": isSelected.value ? "true" : "false",

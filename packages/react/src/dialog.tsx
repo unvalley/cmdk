@@ -55,14 +55,9 @@ export const CommandDialog = ({
   ...commandProps
 }: CommandDialogProps): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const [commandInstanceKey, setCommandInstanceKey] = useState(0)
+  const previousOpen = useRef(open)
   const isSearchControlled = searchProp !== undefined
-  const [internalSearch, setInternalSearch] = useState("")
-  const search = isSearchControlled ? searchProp : internalSearch
-
-  const handleSearchChange = (next: string) => {
-    if (!isSearchControlled) setInternalSearch(next)
-    onSearchChange?.(next)
-  }
 
   // Forward ref to the dialog element.
   useEffect(() => {
@@ -79,12 +74,13 @@ export const CommandDialog = ({
     else if (!open && el.open) el.close()
   }, [open])
 
-  // Clear the search when the dialog closes, so the next open starts fresh.
-  // Only applies when search is uncontrolled.
+  // Reset uncontrolled search by remounting the inner Command. This preserves
+  // the uncontrolled semantics of defaultSearch while still clearing on close.
   useEffect(() => {
-    if (!open && resetSearchOnClose && !isSearchControlled) {
-      setInternalSearch("")
+    if (previousOpen.current && !open && resetSearchOnClose && !isSearchControlled) {
+      setCommandInstanceKey((key) => key + 1)
     }
+    previousOpen.current = open
   }, [open, resetSearchOnClose, isSearchControlled])
 
   // The native dialog fires a `close` event when the user presses ESC
@@ -122,7 +118,12 @@ export const CommandDialog = ({
       onClick={handleClick}
       onKeyDown={handleKeyDown}
     >
-      <Command search={search} onSearchChange={handleSearchChange} {...commandProps}>
+      <Command
+        key={commandInstanceKey}
+        onSearchChange={onSearchChange}
+        {...(isSearchControlled ? { search: searchProp } : {})}
+        {...commandProps}
+      >
         {children}
       </Command>
     </dialog>
