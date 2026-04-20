@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
 })
 
 // biome-ignore lint/correctness/noUnusedVariables: referenced from the Vue template
-const run = (value: string): void => {
+const run = (_value: string): void => {
   open.value = false
 }
 </script>
