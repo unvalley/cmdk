@@ -16,5 +16,6 @@ export default defineConfig({
       provider: playwright(),
     },
     include: ["tests/**/*.test.{ts,tsx}"],
+    exclude: ["tests/**/*.node.test.{ts,tsx}"],
   },
 })

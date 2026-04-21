@@ -31,8 +31,10 @@
     "url": "https://github.com/unvalley/command-palette/issues"
   },
   "scripts": {
-    "build": "tsdown",
-    "test": "vitest run",
+    "build": "tsdown && node ./scripts/assert-use-client.mjs",
+    "test": "pnpm test:browser && pnpm test:node",
+    "test:browser": "vitest run --config vitest.config.ts",
+    "test:node": "vitest run --config vitest.node.config.ts",
     "test:watch": "vitest --browser.headless=false",
     "typecheck": "tsc --noEmit"
   },

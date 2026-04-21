@@ -1,3 +1,5 @@
+"use client"
+
 export { Command, type CommandProps } from "./command"
 export { useCommandSlice, useCommandStore } from "./context"
 export { CommandDialog, type CommandDialogProps } from "./dialog"
