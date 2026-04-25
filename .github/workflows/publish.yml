@@ -12,10 +12,13 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: release
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -47,6 +50,12 @@ jobs:
 
           if [ "${package_version}" != "${version}" ]; then
             echo "Tag ${tag} does not match package version ${package_version}."
+            exit 1
+          fi
+
+          git fetch origin main
+          if ! git merge-base --is-ancestor "${GITHUB_SHA}" origin/main; then
+            echo "Tag ${tag} points to ${GITHUB_SHA}, which is not contained in origin/main."
             exit 1
           fi
 
