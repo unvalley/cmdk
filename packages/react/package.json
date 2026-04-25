@@ -1,6 +1,6 @@
 {
   "name": "@command-palette/react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Unstyled React command palette primitives",
   "type": "module",
   "sideEffects": false,
