@@ -1,10 +1,17 @@
-name: Create @command-palette/react release tag
+name: Create release tag
 
 on:
   workflow_dispatch:
     inputs:
+      package:
+        description: "Package to release."
+        required: true
+        type: choice
+        options:
+          - react
+          - vue
       version:
-        description: "Version to release, without the react-v prefix. Must match packages/react/package.json."
+        description: "Version to release, without the package-v prefix. Must match the package.json version."
         required: true
         type: string
 
@@ -43,10 +50,23 @@ jobs:
       - name: Validate release version
         id: release
         env:
+          RELEASE_PACKAGE: ${{ inputs.package }}
           RELEASE_VERSION: ${{ inputs.version }}
         run: |
+          package="${RELEASE_PACKAGE}"
           version="${RELEASE_VERSION}"
-          package_version="$(node -p "require('./packages/react/package.json').version")"
+
+          case "${package}" in
+            react | vue) ;;
+            *)
+              echo "Unsupported package: ${package}"
+              exit 1
+              ;;
+          esac
+
+          package_name="@command-palette/${package}"
+          package_dir="packages/${package}"
+          package_version="$(node -p "require('./${package_dir}/package.json').version")"
 
           if [[ ! "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
             echo "Version ${version} is not a valid release version."
@@ -58,17 +78,20 @@ jobs:
             exit 1
           fi
 
-          if npm view "@command-palette/react@${version}" version >/dev/null 2>&1; then
-            echo "@command-palette/react@${version} is already published."
+          if npm view "${package_name}@${version}" version >/dev/null 2>&1; then
+            echo "${package_name}@${version} is already published."
             exit 1
           fi
 
-          tag="react-v${version}"
+          tag="${package}-v${version}"
           if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
             echo "Tag ${tag} already exists."
             exit 1
           fi
 
+          echo "package=${package}" >> "$GITHUB_OUTPUT"
+          echo "package_name=${package_name}" >> "$GITHUB_OUTPUT"
+          echo "package_dir=${package_dir}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
 
@@ -77,12 +100,13 @@ jobs:
 
       - name: Create release tag
         env:
+          RELEASE_PACKAGE_NAME: ${{ steps.release.outputs.package_name }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "${RELEASE_TAG}" -m "@command-palette/react ${RELEASE_VERSION}"
+          git tag -a "${RELEASE_TAG}" -m "${RELEASE_PACKAGE_NAME} ${RELEASE_VERSION}"
           git push origin "${RELEASE_TAG}"
 
       - name: Trigger publish workflow

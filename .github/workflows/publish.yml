@@ -1,13 +1,14 @@
-name: Publish @command-palette/react
+name: Publish package
 
 on:
   push:
     tags:
       - "react-v*"
+      - "vue-v*"
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. react-v0.0.2)"
+        description: "Release tag (e.g. react-v0.0.2 or vue-v0.0.1)"
         required: true
         type: string
 
@@ -50,11 +51,28 @@ jobs:
         id: release
         run: |
           tag="${TAG_NAME}"
-          version="${tag#react-v}"
-          package_version="$(node -p "require('./packages/react/package.json').version")"
 
-          if [ "${tag}" = "${version}" ]; then
-            echo "Tag ${tag} must start with react-v."
+          case "${tag}" in
+            react-v*)
+              package="react"
+              version="${tag#react-v}"
+              ;;
+            vue-v*)
+              package="vue"
+              version="${tag#vue-v}"
+              ;;
+            *)
+              echo "Tag ${tag} must start with react-v or vue-v."
+              exit 1
+              ;;
+          esac
+
+          package_name="@command-palette/${package}"
+          package_dir="packages/${package}"
+          package_version="$(node -p "require('./${package_dir}/package.json').version")"
+
+          if [ -z "${version}" ] || [ "${tag}" = "${version}" ]; then
+            echo "Tag ${tag} does not contain a version."
             exit 1
           fi
 
@@ -76,16 +94,19 @@ jobs:
             exit 1
           fi
 
-          if npm view "@command-palette/react@${version}" version >/dev/null 2>&1; then
-            echo "@command-palette/react@${version} is already published."
+          if npm view "${package_name}@${version}" version >/dev/null 2>&1; then
+            echo "${package_name}@${version} is already published."
             exit 1
           fi
 
+          echo "package=${package}" >> "$GITHUB_OUTPUT"
+          echo "package_name=${package_name}" >> "$GITHUB_OUTPUT"
+          echo "package_dir=${package_dir}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
       - name: Verify
         run: pnpm check
 
       - name: Publish package
-        working-directory: packages/react
+        working-directory: ${{ steps.release.outputs.package_dir }}
         run: npm publish --provenance --access public
